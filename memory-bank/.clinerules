@@ -1,0 +1,148 @@
+# Cosmic Threads Project Intelligence
+
+This file captures important patterns, preferences, and project intelligence for the Cosmic Threads T-shirt design application. It will be updated as new patterns are discovered and validated.
+
+## Project Structure Patterns
+
+### File Organization
+
+- **Page Components**: Located in `/app` directory following Next.js App Router convention
+- **Reusable Components**: Located in `/components` directory
+- **UI Components**: shadcn/ui components in `/components/ui` directory
+- **Custom Hooks**: Located in `/hooks` directory
+- **Utility Functions**: Located in `/lib` directory
+- **API Routes**: Located in `/app/api` directory
+- **Types**: Located in `/types` directory
+
+### Naming Conventions
+
+- **Components**: PascalCase (e.g., `DesignGenerator.tsx`)
+- **Hooks**: camelCase with 'use' prefix (e.g., `useImageGeneration.ts`)
+- **Utility Functions**: camelCase (e.g., `formatCurrency.ts`)
+- **API Routes**: kebab-case for directories, `route.ts` for files
+- **Context Providers**: PascalCase with 'Provider' suffix (e.g., `CartProvider.tsx`)
+
+## Code Style Preferences
+
+### TypeScript
+
+- Use TypeScript for all new files
+- Define explicit types for function parameters and return values
+- Use interfaces for complex object types
+- Use type guards for runtime type checking
+
+### React Components
+
+- Prefer functional components with hooks over class components
+- Use destructuring for props
+- Define prop types with TypeScript interfaces
+- Use React.FC type sparingly (prefer explicit return types)
+
+### CSS/Styling
+
+- Use Tailwind CSS utility classes for styling
+- Follow the project's retro-futuristic aesthetic
+- Use CSS variables for theme colors and spacing
+- Maintain responsive design for all components
+
+## Implementation Patterns
+
+### API Calls
+
+- Use abstracted service functions in `/lib` directory
+- Implement proper error handling for all API calls
+- Use TypeScript types for request/response data
+- Consider caching strategies for expensive calls
+
+### State Management
+
+- Use React Context for global state
+- Use local component state for UI-specific state
+- Consider performance implications of context updates
+- Use reducers for complex state logic
+
+### Authentication
+
+- Use Supabase Auth for authentication
+- Implement protected routes for authenticated content
+- Handle auth state changes consistently
+- Provide clear feedback for auth errors
+
+### Form Handling
+
+- Use controlled components for form inputs
+- Implement proper validation with error messages
+- Consider using a form library for complex forms
+- Ensure accessibility for all form elements
+
+## AI Integration Patterns
+
+### Prompt Engineering
+
+- Keep prompts clear and specific
+- Include style guidance in prompts
+- Consider prompt templates for consistent results
+- Implement prompt enhancement for user inputs
+
+### Image Generation
+
+- Optimize for t-shirt design requirements
+- Consider background removal for final designs
+- Implement proper error handling for generation failures
+- Provide clear feedback during generation process
+
+## User Experience Patterns
+
+### Loading States
+
+- Show loading indicators for all async operations
+- Provide progress feedback for long-running processes
+- Implement skeleton loaders for content
+- Maintain UI stability during loading
+
+### Error Handling
+
+- Display user-friendly error messages
+- Log detailed errors for debugging
+- Implement graceful fallbacks for failures
+- Consider retry mechanisms for transient errors
+
+### Responsive Design
+
+- Design for mobile-first
+- Test on multiple screen sizes
+- Ensure touch-friendly UI elements
+- Optimize performance for mobile devices
+
+## Development Workflow
+
+### Git Workflow
+
+- Create feature branches from main
+- Use descriptive commit messages
+- Submit pull requests for code review
+- Keep PRs focused on single features/fixes
+
+### Testing Strategy
+
+- Implement unit tests for critical functionality
+- Consider integration tests for key user flows
+- Test on multiple browsers and devices
+- Validate AI generation results
+
+## Known Quirks and Workarounds
+
+This section will be populated as development progresses and specific quirks or workarounds are identified.
+
+## Project-Specific Terminology
+
+- **Design**: A user-created t-shirt design
+- **Prompt**: Text description used to generate a design
+- **Enhanced Prompt**: AI-improved version of user prompt
+- **Style**: Visual aesthetic applied to generated designs
+- **Mockup**: Visualization of design on a t-shirt
+- **Placement**: Location of design on a product (front, back, sleeve)
+
+---
+
+*This file will be continuously updated as new patterns and preferences are discovered during development.*
