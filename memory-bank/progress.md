@@ -2,7 +2,7 @@
 
 ## Current Status
 
-The project is in the **early development phase**. Based on the file structure and component organization, significant groundwork has been laid out, but many features are likely still in development or require refinement.
+The project is in the **early development phase**. Based on the file structure and component organization, significant groundwork has been laid out, but many features are still in development or require refinement.
 
 ### Project Structure Status
 
@@ -51,6 +51,7 @@ Based on the current file structure, the following features appear to be impleme
 ✅ Design-related API routes  
 ✅ Prompt enhancement API  
 ✅ Image generation API routes  
+✅ Printful API v2 routes with caching middleware
 
 ### Services
 
@@ -59,6 +60,15 @@ Based on the current file structure, the following features appear to be impleme
   - API services
   - Authentication
   - Database access
+  - Printful API v2 integration
+
+### Development Tools
+
+✅ Supabase MCP Server setup for:
+  - Direct database interaction from AI assistants
+  - Database schema exploration
+  - SQL query execution with safety controls
+  - User management via Auth Admin SDK
 
 ## What's Left to Build
 
@@ -89,9 +99,12 @@ Based on the project brief and current structure, the following features likely 
 ### Integration Work
 
 🔄 Printful API Integration
-  - Complete product catalog synchronization
-  - Implement order submission
-  - Handle fulfillment status updates
+  - ✅ Implement API routes for catalog browsing
+  - ✅ Add caching middleware for improved performance
+  - ✅ Create documentation for the integration
+  - 🔄 Update demo page to properly display product information
+  - 🔄 Implement order submission
+  - 🔄 Handle fulfillment status updates
 
 🔄 Payment Processing
   - Implement Stripe integration (planned)
@@ -102,6 +115,53 @@ Based on the project brief and current structure, the following features likely 
   - Finalize database schema
   - Implement data access patterns
   - Set up efficient queries and caching
+
+### Database Schema
+
+✅ Initial database schema exploration completed with the following tables identified:
+
+**public.users**
+- id (uuid, primary key, linked to auth.users)
+- email (text, not null)
+- full_name (text, nullable)
+- avatar_url (text, nullable)
+- created_at (timestamp with time zone, not null)
+- updated_at (timestamp with time zone, not null)
+- role (text, not null, default: 'user')
+- stripe_customer_id (text, nullable)
+
+**public.projects**
+- id (uuid, primary key)
+- name (text, not null)
+- description (text, nullable)
+- user_id (uuid, not null, foreign key to users.id)
+- created_at (timestamp with time zone, not null)
+- updated_at (timestamp with time zone, not null)
+- is_public (boolean, not null, default: false)
+- thumbnail_url (text, nullable)
+
+**public.designs**
+- id (uuid, primary key)
+- project_id (uuid, not null, foreign key to projects.id)
+- name (text, not null)
+- prompt (text, not null)
+- image_url (text, nullable)
+- created_at (timestamp with time zone, not null)
+- updated_at (timestamp with time zone, not null)
+- metadata (jsonb, nullable)
+- status (text, not null, default: 'draft')
+
+**public.orders**
+- id (uuid, primary key)
+- user_id (uuid, not null, foreign key to users.id)
+- design_id (uuid, not null, foreign key to designs.id)
+- status (text, not null, default: 'pending')
+- amount (numeric, not null)
+- currency (text, not null, default: 'usd')
+- payment_intent_id (text, nullable)
+- shipping_address (jsonb, nullable)
+- created_at (timestamp with time zone, not null)
+- updated_at (timestamp with time zone, not null)
 
 ### User Experience Refinement
 
@@ -116,15 +176,28 @@ Based on the project brief and current structure, the following features likely 
   - Test touch interactions
 
 🔄 Performance Optimization
-  - Optimize image loading and processing
-  - Implement efficient caching strategies
-  - Reduce unnecessary re-renders
+  - ✅ Implement API caching for Printful API v2
+  - 🔄 Optimize image loading and processing
+  - 🔄 Reduce unnecessary re-renders
 
 ## Known Issues
 
-As this is the initial setup of the memory bank, specific issues have not yet been documented. This section will be updated as development progresses and issues are identified.
+### Resolved Issues
 
-Potential areas to monitor for issues:
+1. **Theme Hydration Mismatch (Resolved on March 18, 2025)**
+   - **Issue**: React hydration mismatch error related to the theme implementation. The server was rendering the HTML element with dark theme classes, but the client was initializing differently.
+   - **Solution**: Added the `suppressHydrationWarning` attribute to the HTML element in `app/layout.tsx` to tell React to ignore hydration mismatches for the HTML element.
+   - **Impact**: The development server now runs without hydration errors, and the theme is applied consistently.
+   - **Prevention**: This is a common issue with Next.js applications that use theming, particularly with dark mode. The `suppressHydrationWarning` attribute is a recommended solution for theme-related hydration issues.
+
+### Current Issues
+
+1. **Printful API v2 Demo Page Display (March 18, 2025)**
+   - **Issue**: The Printful API v2 demo page is not properly displaying product information from the API.
+   - **Status**: Identified issue with API response handling in the `callPrintfulApi` function.
+   - **Next Steps**: Update the demo page to properly parse and display the API response.
+
+### Potential Areas to Monitor
 
 1. **AI Generation Quality**
    - Consistency of generated designs
@@ -145,30 +218,31 @@ Potential areas to monitor for issues:
 
 Based on the current status, the following priorities are recommended:
 
-1. **Complete Core AI Design Flow**
+1. **Complete Printful API v2 Integration**
+   - Update the demo page to properly display product information
+   - Add error handling and retry logic for API calls
+   - Implement the remaining API endpoints (order creation, etc.)
+   - Add unit tests for the API service and middleware
+
+2. **Integrate Printful API with T-Shirt Customization**
+   - Connect the Printful API to the t-shirt customization UI
+   - Implement color and size selection based on available variants
+   - Create realistic mockup generation using the Printful API
+
+3. **Complete Core AI Design Flow**
    - Ensure reliable design generation from prompts
    - Implement design customization options
    - Create seamless user experience for design creation
 
-2. **Finalize Product Customization**
-   - Complete t-shirt preview functionality
-   - Implement all customization options
-   - Ensure accurate representation of final product
-
-3. **Implement E-commerce Functionality**
+4. **Implement E-commerce Functionality**
    - Complete cart and checkout flow
    - Integrate with Printful for fulfillment
-   - Set up payment processing
+   - Set up payment processing with Stripe
 
-4. **User Account Management**
+5. **User Account Management**
    - Finalize authentication flows
    - Implement user profiles and saved designs
    - Create order history and tracking
-
-5. **Testing and Optimization**
-   - Comprehensive testing across devices
-   - Performance optimization
-   - Security review
 
 ## Development Metrics
 
@@ -176,9 +250,14 @@ This section will track development progress metrics as the project advances. In
 
 ## Recent Achievements
 
-- Initial project structure established
-- Memory bank documentation system created
-- Core component architecture defined
+- Implemented comprehensive caching system for Printful API v2 integration
+- Created reusable API route caching middleware
+- Enhanced API response handling for improved reliability
+- Added performance monitoring for API calls
+- Updated documentation for the Printful API v2 integration
+- Fixed theme hydration mismatch issue
+- Set up Supabase MCP server for direct database interaction
+- Created sample data in the database (user, project, design, order)
 
 ---
 

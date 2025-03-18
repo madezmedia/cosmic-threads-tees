@@ -44,6 +44,7 @@
 - **Package Manager**: npm, yarn, or bun
 - **Git**: Latest version
 - **IDE**: VS Code recommended (with ESLint and Prettier extensions)
+- **Python**: v3.12+ (for Supabase MCP server)
 
 ### Local Development Environment
 
@@ -110,6 +111,26 @@
 - **Husky**: Git hooks for pre-commit linting and formatting
 - **Jest**: Unit testing (planned)
 - **Cypress**: End-to-end testing (planned)
+- **Supabase MCP Server**: Model Context Protocol server for Supabase database management
+
+### Supabase MCP Server
+
+The project uses the Supabase MCP server to interact with the Supabase database directly from Cline and other MCP-compatible AI assistants.
+
+- **Installation**: Installed via pipx (`pipx install supabase-mcp-server`)
+- **Configuration**: Configured in `cline_mcp_settings.json` with project credentials
+- **Project ID**: aiozskladrzyydatebyg
+- **Region**: us-east-1 (East US North Virginia)
+- **Capabilities**:
+  - Database schema exploration
+  - SQL query execution with safety controls
+  - User management via Auth Admin SDK
+  - Supabase Management API access
+
+The MCP server provides a safe interface for AI assistants to interact with the database, with built-in protections:
+- Safe mode (default): Read-only operations
+- Write mode: Data modifications (requires explicit enabling)
+- Destructive mode: Schema changes (requires confirmation)
 
 ## Technical Constraints
 

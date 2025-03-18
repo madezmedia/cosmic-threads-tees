@@ -54,6 +54,17 @@ This file captures important patterns, preferences, and project intelligence for
 - Use TypeScript types for request/response data
 - Consider caching strategies for expensive calls
 
+### Supabase MCP Server Usage
+
+- Use the Supabase MCP server for database exploration and management
+- Follow the safety protocol for database operations:
+  - Use safe mode (default) for read-only operations
+  - Enable write mode only when data modifications are needed
+  - Require explicit confirmation for schema-changing operations
+- Document any schema changes made through the MCP server
+- Use the Auth Admin SDK for user management operations
+- Prefer parameterized queries to prevent SQL injection
+
 ### State Management
 
 - Use React Context for global state
@@ -132,7 +143,21 @@ This file captures important patterns, preferences, and project intelligence for
 
 ## Known Quirks and Workarounds
 
-This section will be populated as development progresses and specific quirks or workarounds are identified.
+### Next.js Theme Hydration Issues
+
+- **Issue**: Next.js applications with theme switching (especially dark mode) can experience hydration mismatches between server and client rendering.
+- **Symptoms**: Console errors about hydration mismatches, specifically related to the HTML element's class or style attributes.
+- **Workaround**: Add the `suppressHydrationWarning` attribute to the HTML element in the root layout:
+  ```tsx
+  <html lang="en" suppressHydrationWarning>
+    {/* ... */}
+  </html>
+  ```
+- **Explanation**: This tells React to ignore hydration mismatches for the HTML element, which is a recommended solution for theme-related hydration issues.
+- **Alternative Solutions**:
+  1. Use a client-only component for theme switching
+  2. Implement a "flash of incorrect theme" prevention technique
+  3. Use CSS variables instead of classes for theming
 
 ## Project-Specific Terminology
 

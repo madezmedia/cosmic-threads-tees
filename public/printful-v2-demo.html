@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Printful API v2 Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .panel {
+      flex: 1;
+      min-width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    select, input {
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .product-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .mockup-container {
+      margin-top: 20px;
+    }
+    .mockup-container img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .color-swatch {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>Printful API v2 Demo</h1>
+  <p>This demo showcases the integration with Printful API v2 beta for the Cosmic Threads T-shirt design platform.</p>
+
+  <div class="container">
+    <div class="panel">
+      <h2>1. Find Design-Friendly T-shirts</h2>
+      <button id="findTshirtsBtn">Find T-shirts</button>
+      <div id="tshirtsResult"></div>
+    </div>
+
+    <div class="panel">
+      <h2>2. Product Details</h2>
+      <div id="productDetails">
+        <p>Select a product from step 1 to see details</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>3. Product Customization</h2>
+    <div id="customizationPanel" style="display: none;">
+      <div class="container">
+        <div>
+          <h3>Colors</h3>
+          <div id="colorOptions"></div>
+          
+          <h3>Sizes</h3>
+          <select id="sizeSelect"></select>
+          
+          <h3>Mockup Styles</h3>
+          <select id="mockupStyleSelect"></select>
+        </div>
+        
+        <div>
+          <h3>Design Image URL</h3>
+          <input type="text" id="designUrl" placeholder="Enter URL to your design image" value="https://placehold.co/600x600/png">
+          
+          <h3>Generate Mockup</h3>
+          <button id="generateMockupBtn">Generate Mockup</button>
+          
+          <div id="mockupResult" class="mockup-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>API Response</h2>
+    <pre id="responseData">Select an action above to see API response data</pre>
+  </div>
+
+  <script>
+    // State management
+    let state = {
+      selectedProduct: null,
+      selectedVariant: null,
+      selectedColor: null,
+      selectedSize: null,
+      selectedMockupStyle: null,
+      products: [],
+      variants: [],
+      colors: [],
+      sizes: [],
+      mockupStyles: []
+    };
+
+    // DOM Elements
+    const findTshirtsBtn = document.getElementById('findTshirtsBtn');
+    const tshirtsResult = document.getElementById('tshirtsResult');
+    const productDetails = document.getElementById('productDetails');
+    const customizationPanel = document.getElementById('customizationPanel');
+    const colorOptions = document.getElementById('colorOptions');
+    const sizeSelect = document.getElementById('sizeSelect');
+    const mockupStyleSelect = document.getElementById('mockupStyleSelect');
+    const designUrl = document.getElementById('designUrl');
+    const generateMockupBtn = document.getElementById('generateMockupBtn');
+    const mockupResult = document.getElementById('mockupResult');
+    const responseData = document.getElementById('responseData');
+
+    // Event Listeners
+    findTshirtsBtn.addEventListener('click', findDesignFriendlyTshirts);
+    generateMockupBtn.addEventListener('click', generateMockup);
+
+    // API Functions
+    async function findDesignFriendlyTshirts() {
+      try {
+        // Show loading state
+        displayResponse({ status: "loading", message: "Fetching t-shirts..." });
+        
+        console.log('Fetching t-shirts...');
+        const response = await fetch('/api/printful/v2/utils/design-friendly-tshirts');
+        console.log('Response received:', response.status);
+        
+        const data = await response.json();
+        console.log('Data parsed:', data);
+        
+        displayResponse(data);
+        
+        if (data.tshirts && data.tshirts.length > 0) {
+          console.log(`Found ${data.tshirts.length} t-shirts`);
+          state.products = data.tshirts;
+          displayProducts(data.tshirts);
+        } else {
+          console.log('No t-shirts found in response:', data);
+          tshirtsResult.innerHTML = '<p>No t-shirts found. Check console for details.</p>';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        displayResponse({ error: 'Failed to fetch t-shirts', details: error.toString() });
+        tshirtsResult.innerHTML = '<p>Error fetching t-shirts. Check console for details.</p>';
+      }
+    }
+
+    async function getProductDetails(productId) {
+      try {
+        const response = await fetch(`/api/printful/v2/catalog-products/${productId}`);
+        const data = await response.json();
+        
+        displayResponse(data);
+        
+        if (data.product) {
+          state.selectedProduct = data.product;
+          displayProductDetails(data.product);
+          await getProductVariants(productId);
+          await getProductColors(productId);
+          await getProductSizes(productId);
+          await getMockupStyles(productId);
+          customizationPanel.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        displayResponse({ error: 'Failed to fetch product details' });
+      }
+    }
+
+    async function getProductVariants(productId) {
+      try {
+        const response = await fetch(`/api/printful/v2/catalog-products/${productId}/variants`);
+        const data = await response.json();
+        
+        if (data.variants) {
+          state.variants = data.variants;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function getProductColors(productId) {
+      try {
+        const response = await fetch(`/api/printful/v2/utils/product-colors?productId=${productId}`);
+        const data = await response.json();
+        
+        if (data.colors) {
+          state.colors = data.colors;
+          displayColorOptions(data.colors);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function getProductSizes(productId) {
+      try {
+        const response = await fetch(`/api/printful/v2/utils/product-sizes?productId=${productId}`);
+        const data = await response.json();
+        
+        if (data.sizes) {
+          state.sizes = data.sizes;
+          displaySizeOptions(data.sizes);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function getMockupStyles(productId) {
+      try {
+        const response = await fetch(`/api/printful/v2/catalog-products/${productId}/mockup-styles`);
+        const data = await response.json();
+        
+        if (data.styles) {
+          state.mockupStyles = data.styles;
+          displayMockupStyles(data.styles);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    async function findVariant() {
+      if (!state.selectedProduct || !state.selectedColor || !state.selectedSize) {
+        return null;
+      }
+      
+      try {
+        const response = await fetch(`/api/printful/v2/utils/find-variant?productId=${state.selectedProduct.id}&color=${state.selectedColor.name}&size=${state.selectedSize}`);
+        const data = await response.json();
+        
+        if (data.variant) {
+          state.selectedVariant = data.variant;
+          return data.variant;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+      
+      return null;
+    }
+
+    async function generateMockup() {
+      const variant = await findVariant();
+      
+      if (!variant) {
+        alert('Please select a product, color, and size first');
+        return;
+      }
+      
+      if (!designUrl.value) {
+        alert('Please enter a design image URL');
+        return;
+      }
+      
+      try {
+        const payload = {
+          productId: state.selectedProduct.id,
+          variantId: variant.id,
+          imageUrl: designUrl.value,
+          placement: 'front',
+          mockupStyleId: state.selectedMockupStyle ? state.selectedMockupStyle.id : undefined
+        };
+        
+        const response = await fetch('/api/printful/v2/mockups', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        displayResponse(data);
+        
+        if (data.mockups && data.mockups.length > 0) {
+          displayMockup(data.mockups[0]);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        displayResponse({ error: 'Failed to generate mockup' });
+      }
+    }
+
+    // Display Functions
+    function displayProducts(products) {
+      let html = '<div class="product-grid">';
+      
+      products.forEach(product => {
+        html += `
+          <div class="product-card" onclick="getProductDetails(${product.id})">
+            <img src="${product.product_image_url}" alt="${product.name}">
+            <h3>${product.name}</h3>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      tshirtsResult.innerHTML = html;
+      
+      // Add global function for product selection
+      window.getProductDetails = getProductDetails;
+    }
+
+    function displayProductDetails(product) {
+      let html = `
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        <div>
+          <strong>Available Placements:</strong>
+          <ul>
+            ${Object.keys(product.available_placements).map(placement => 
+              `<li>${placement} (${product.available_placements[placement].technique})</li>`
+            ).join('')}
+          </ul>
+        </div>
+      `;
+      
+      productDetails.innerHTML = html;
+    }
+
+    function displayColorOptions(colors) {
+      let html = '';
+      
+      colors.forEach(color => {
+        html += `
+          <div style="margin-bottom: 10px;">
+            <label>
+              <input type="radio" name="color" value="${color.name}" onchange="selectColor('${color.name}', '${color.code}')">
+              <span class="color-swatch" style="background-color: ${color.code};"></span>
+              ${color.name}
+            </label>
+          </div>
+        `;
+      });
+      
+      colorOptions.innerHTML = html;
+      
+      // Add global function for color selection
+      window.selectColor = (name, code) => {
+        state.selectedColor = { name, code };
+      };
+    }
+
+    function displaySizeOptions(sizes) {
+      let html = '<option value="">Select a size</option>';
+      
+      sizes.forEach(size => {
+        html += `<option value="${size}">${size}</option>`;
+      });
+      
+      sizeSelect.innerHTML = html;
+      
+      sizeSelect.addEventListener('change', (e) => {
+        state.selectedSize = e.target.value;
+      });
+    }
+
+    function displayMockupStyles(styles) {
+      let html = '<option value="">Default style</option>';
+      
+      styles.forEach(style => {
+        html += `<option value="${style.id}">${style.name}</option>`;
+      });
+      
+      mockupStyleSelect.innerHTML = html;
+      
+      mockupStyleSelect.addEventListener('change', (e) => {
+        const styleId = e.target.value;
+        state.selectedMockupStyle = styleId ? styles.find(s => s.id === parseInt(styleId)) : null;
+      });
+    }
+
+    function displayMockup(mockup) {
+      mockupResult.innerHTML = `
+        <h3>Generated Mockup</h3>
+        <img src="${mockup.mockup_url}" alt="Generated Mockup">
+      `;
+    }
+
+    function displayResponse(data) {
+      responseData.textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
