@@ -10,6 +10,8 @@ import { Slider } from "@/components/ui/slider";
 import StyleSelector from "@/components/style-selector";
 import ProductSelector from "@/components/product-selector";
 import { Sparkles, Wand2 } from "lucide-react";
+import { generateImageWithFalAi } from "@/lib/fal-ai-service";
+import { enhancePrompt } from "@/lib/prompt-service";
 
 interface ConceptStepProps {
   onComplete: () => void;
@@ -45,24 +47,51 @@ export function ConceptStep({ onComplete }: ConceptStepProps) {
     
     setIsGenerating(true);
     dispatch({ type: "SET_IS_GENERATING", payload: true });
+    dispatch({ type: "SET_GENERATION_PROGRESS", payload: 0 });
     
     try {
-      // Simulate API call with progress updates
-      for (let i = 0; i <= 100; i += 10) {
-        dispatch({ type: "SET_GENERATION_PROGRESS", payload: i });
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
+      // First, enhance the prompt
+      dispatch({ type: "SET_IS_ENHANCING", payload: true });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 10 });
       
-      // Simulate a generated design
-      const mockDesign = {
-        id: "design-" + Date.now(),
-        content: "/placeholder.jpg", // Replace with actual generated image
-        prompt: prompt,
+      // Call the prompt enhancement service
+      const enhancedPrompt = await enhancePrompt(prompt, state.styles.join(", "), state.medium.id);
+      dispatch({ type: "SET_ENHANCED_PROMPT", payload: enhancedPrompt });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 30 });
+      dispatch({ type: "SET_IS_ENHANCING", payload: false });
+      
+      // Generate the image using fal.ai
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 40 });
+      
+      const generationParams = {
+        guidance_scale: 7.5 + (state.complexity / 20), // Adjust guidance scale based on complexity
+        num_inference_steps: 30 + Math.floor(state.complexity / 5), // More steps for higher complexity
+        seed: Math.floor(Math.random() * 1000000),
+        image_size: "landscape_4_3",
         style: state.styles.join(", "),
-        medium: state.medium?.id || "",
+        negative_prompt: "low quality, blurry, distorted, deformed, disfigured, text, watermark",
       };
       
-      dispatch({ type: "SET_GENERATED_DESIGN", payload: mockDesign });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 60 });
+      
+      // Call the fal.ai service
+      const result = await generateImageWithFalAi(enhancedPrompt, generationParams);
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 90 });
+      
+      // Create the design object
+      const design = {
+        id: "design-" + Date.now(),
+        content: result.imageUrl,
+        prompt: prompt,
+        enhancedPrompt: enhancedPrompt,
+        style: state.styles.join(", "),
+        medium: state.medium?.id || "",
+        seed: result.seed,
+        metadata: result.metadata,
+      };
+      
+      dispatch({ type: "SET_GENERATED_DESIGN", payload: design });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 100 });
       setIsGenerating(false);
       dispatch({ type: "SET_IS_GENERATING", payload: false });
       
@@ -72,6 +101,7 @@ export function ConceptStep({ onComplete }: ConceptStepProps) {
       console.error("Error generating design:", error);
       setIsGenerating(false);
       dispatch({ type: "SET_IS_GENERATING", payload: false });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 0 });
       alert("Failed to generate design. Please try again.");
     }
   };

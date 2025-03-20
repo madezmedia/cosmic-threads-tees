@@ -168,6 +168,40 @@ This file captures important patterns, preferences, and project intelligence for
 - Use descriptive commit messages
 - Submit pull requests for code review
 - Keep PRs focused on single features/fixes
+- Create GitHub issues for tracking tasks and bugs
+- Link commits and PRs to relevant issues
+- Use GitHub Projects for sprint planning and tracking
+
+### Deployment Workflow
+
+- Vercel is used for continuous deployment
+- Main branch deploys to production automatically
+- Feature branches create preview deployments
+- Run pre-deployment checks before merging to main
+- Monitor deployment status in Vercel dashboard
+- Rollback to previous deployment if issues are detected
+- Document deployment-specific configurations in the repository
+
+### Issue Tracking
+
+- Use GitHub Issues for task and bug tracking
+- Create detailed issues with clear acceptance criteria
+- Apply appropriate labels for categorization (bug, enhancement, etc.)
+- Set priority levels (high, medium, low)
+- Assign issues to team members
+- Update issue status as work progresses
+- Close issues with reference to the resolving PR or commit
+- Create issues for all planned work before starting implementation
+
+### Workflow Conclusion
+
+- Create GitHub issues for new features or bugs discovered during development
+- Submit PR with implementation and link to relevant issues
+- Deploy to Vercel and verify functionality in preview environment
+- Document changes in memory-bank files
+- Update progress.md with completed items
+- Close related GitHub issues after successful deployment
+- Communicate deployment completion to the team
 
 ### Testing Strategy
 
@@ -175,6 +209,7 @@ This file captures important patterns, preferences, and project intelligence for
 - Consider integration tests for key user flows
 - Test on multiple browsers and devices
 - Validate AI generation results
+- Verify functionality in Vercel preview deployments before merging
 
 ## API Integration Patterns
 

@@ -6,16 +6,67 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Sparkles, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { generateImageWithFalAi } from "@/lib/fal-ai-service"
+import { enhancePrompt } from "@/lib/prompt-service"
 
 export default function DesignPreview() {
   const { state, dispatch } = useDesign()
   const { medium, styles, complexity, placementOption, generatedDesign, isGenerating, generationProgress } = state
 
   // Function to handle regeneration
-  const handleRegenerate = () => {
-    // In a real implementation, this would trigger the generation process
-    // For now, we'll just set isGenerating to true
-    dispatch({ type: "SET_IS_GENERATING", payload: true })
+  const handleRegenerate = async () => {
+    if (!state.prompt || !state.medium) {
+      return;
+    }
+    
+    dispatch({ type: "SET_IS_GENERATING", payload: true });
+    dispatch({ type: "SET_GENERATION_PROGRESS", payload: 0 });
+    
+    try {
+      // First, use the existing enhanced prompt or generate a new one
+      const enhancedPrompt = state.enhancedPrompt || 
+        await enhancePrompt(state.prompt, state.styles.join(", "), state.medium.id);
+      
+      dispatch({ type: "SET_ENHANCED_PROMPT", payload: enhancedPrompt });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 30 });
+      
+      // Generate the image using fal.ai with a new seed
+      const generationParams = {
+        guidance_scale: 7.5 + (state.complexity / 20),
+        num_inference_steps: 30 + Math.floor(state.complexity / 5),
+        seed: Math.floor(Math.random() * 1000000), // New random seed for variation
+        image_size: "landscape_4_3",
+        style: state.styles.join(", "),
+        negative_prompt: "low quality, blurry, distorted, deformed, disfigured, text, watermark",
+      };
+      
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 60 });
+      
+      // Call the fal.ai service
+      const result = await generateImageWithFalAi(enhancedPrompt, generationParams);
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 90 });
+      
+      // Create the design object
+      const design = {
+        id: "design-" + Date.now(),
+        content: result.imageUrl,
+        prompt: state.prompt,
+        enhancedPrompt: enhancedPrompt,
+        style: state.styles.join(", "),
+        medium: state.medium?.id || "",
+        seed: result.seed,
+        metadata: result.metadata,
+      };
+      
+      dispatch({ type: "SET_GENERATED_DESIGN", payload: design });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 100 });
+      dispatch({ type: "SET_IS_GENERATING", payload: false });
+    } catch (error) {
+      console.error("Error regenerating design:", error);
+      dispatch({ type: "SET_IS_GENERATING", payload: false });
+      dispatch({ type: "SET_GENERATION_PROGRESS", payload: 0 });
+      alert("Failed to regenerate design. Please try again.");
+    }
   }
 
   return (

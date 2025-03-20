@@ -10,27 +10,48 @@ export interface EnhancedPromptResponse {
 const styleKeywords: Record<string, string[]> = {
   'minimalist': [
     'clean lines', 'simple composition', 'negative space', 'limited color palette',
-    'geometric', 'uncluttered', 'elegant', 'modern', 'subtle', 'refined'
+    'geometric', 'uncluttered', 'elegant', 'modern', 'subtle', 'refined',
+    'monochromatic', 'balanced', 'essential', 'pure', 'understated'
   ],
   'abstract': [
     'non-representational', 'geometric shapes', 'bold colors', 'expressive',
-    'dynamic', 'emotional', 'vibrant', 'textured', 'fluid', 'energetic'
+    'dynamic', 'emotional', 'vibrant', 'textured', 'fluid', 'energetic',
+    'conceptual', 'non-figurative', 'avant-garde', 'experimental', 'free-form'
   ],
   'landscape': [
     'scenic view', 'horizon', 'natural elements', 'atmospheric', 'panoramic',
-    'serene', 'expansive', 'detailed', 'realistic', 'environmental'
+    'serene', 'expansive', 'detailed', 'realistic', 'environmental',
+    'picturesque', 'tranquil', 'majestic', 'idyllic', 'naturalistic'
   ],
   'retro': [
     'vintage', 'nostalgic', 'old-school', 'classic', 'throwback',
-    'mid-century', 'retro-futuristic', 'analog', 'distressed', 'aged'
+    'mid-century', 'retro-futuristic', 'analog', 'distressed', 'aged',
+    'retro-tech', 'vintage typography', 'halftone', 'weathered', 'antique'
   ],
   'space': [
     'cosmic', 'galactic', 'stellar', 'nebula', 'astronomical',
-    'interstellar', 'planetary', 'celestial', 'sci-fi', 'otherworldly'
+    'interstellar', 'planetary', 'celestial', 'sci-fi', 'otherworldly',
+    'cosmos', 'astral', 'starfield', 'deep space', 'extraterrestrial'
   ],
   'neon': [
     'glowing', 'vibrant', 'fluorescent', 'bright', 'luminous',
-    'electric', 'cyberpunk', 'synthwave', 'vaporwave', 'high-contrast'
+    'electric', 'cyberpunk', 'synthwave', 'vaporwave', 'high-contrast',
+    'ultraviolet', 'blacklight', 'radiant', 'iridescent', 'phosphorescent'
+  ],
+  'retrofuture': [
+    'retro sci-fi', 'atomic age', 'space age', 'futuristic vintage', 'raygun gothic',
+    'atompunk', 'dieselpunk', 'cassette futurism', 'analog tech', 'retrofuturistic',
+    'pulp sci-fi', 'retro-tech', 'future past', 'tomorrow yesterday', 'retro space'
+  ],
+  'cosmic': [
+    'celestial', 'galactic', 'universal', 'astral', 'cosmic energy',
+    'star clusters', 'cosmic dust', 'nebulae', 'cosmic rays', 'constellation',
+    'cosmic glow', 'interstellar', 'cosmic patterns', 'cosmic balance', 'cosmic harmony'
+  ],
+  'psychedelic': [
+    'trippy', 'kaleidoscopic', 'hallucinatory', 'mind-bending', 'surreal',
+    'fractal', 'hypnotic', 'visionary', 'acid art', 'consciousness expanding',
+    'optical illusion', 'dreamlike', 'swirling', 'vibrant colors', 'distorted reality'
   ],
 };
 
@@ -38,15 +59,33 @@ const styleKeywords: Record<string, string[]> = {
 const productKeywords: Record<string, string[]> = {
   'wall-art': [
     'high quality art print', 'home decor', 'wall hanging', 'framed artwork',
-    'gallery quality', 'fine art', 'decorative', 'statement piece', 'wall display'
+    'gallery quality', 'fine art', 'decorative', 'statement piece', 'wall display',
+    'interior design', 'art collection', 'wall feature', 'conversation piece', 'visual focal point'
   ],
   't-shirt': [
     'wearable art', 'graphic tee', 'apparel design', 'screen print style',
-    'fashion forward', 'trendy', 'casual wear', 'clothing graphic', 'textile design'
+    'fashion forward', 'trendy', 'casual wear', 'clothing graphic', 'textile design',
+    'streetwear', 'fabric print', 'garment design', 'fashion statement', 'wearable graphic'
   ],
   'poster': [
     'bold typography', 'visual impact', 'promotional', 'eye-catching',
-    'large format', 'advertising', 'announcement', 'informative', 'striking'
+    'large format', 'advertising', 'announcement', 'informative', 'striking',
+    'wall poster', 'print design', 'visual communication', 'graphic design', 'poster art'
+  ],
+  'hoodie': [
+    'comfortable apparel', 'casual outerwear', 'streetwear graphic', 'urban fashion',
+    'cozy clothing', 'sweatshirt design', 'hood graphic', 'casual style', 'layered look',
+    'front print', 'back print', 'sleeve design', 'fashion statement', 'trendy outerwear'
+  ],
+  'mug': [
+    'drinkware design', 'ceramic surface', 'coffee cup art', 'beverage container',
+    'wrap-around print', 'handle design', 'kitchen accessory', 'gift item', 'daily use item',
+    'functional art', 'beverage holder', 'morning coffee', 'desk accessory', 'conversation starter'
+  ],
+  'phone-case': [
+    'device protection', 'slim profile', 'tech accessory', 'phone cover',
+    'protective case', 'mobile design', 'smartphone art', 'tech fashion', 'gadget style',
+    'personal accessory', 'everyday carry', 'tech customization', 'device skin', 'phone shell'
   ],
 };
 

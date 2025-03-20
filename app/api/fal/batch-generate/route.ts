@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
-import { fal } from "@/lib/fal-client"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { generateImageWithFalAi, batchGenerateImages } from "@/lib/fal-ai-service"
+import { enhancePrompt } from "@/lib/prompt-service"
 
 interface GenerationRequest {
   prompt: string
@@ -78,20 +79,20 @@ export async function POST(request: Request) {
       try {
         console.log(`Generating image for prompt: ${req.prompt}`)
 
-        // Call fal.ai to generate the image
-        const result = await fal.subscribe("fal-ai/flux/dev", {
-          input: {
-            prompt: `${req.prompt}. Style: ${req.style || "realistic"}`,
-            seed: Math.floor(Math.random() * 1000000),
-            image_size: "landscape_4_3",
-            num_images: 1,
-          },
-          logs: true,
-        })
-
-        // Extract the image URL from the response
-        const falResponse = result.data as FalResponse
-        const imageUrl = falResponse.images[0].url
+        // Enhance the prompt
+        const enhancedPrompt = await enhancePrompt(req.prompt, req.style || "realistic", req.mediumId);
+        
+        // Generate the image using the enhanced prompt
+        const generationParams = {
+          seed: Math.floor(Math.random() * 1000000),
+          image_size: "landscape_4_3",
+          style: req.style || "realistic",
+          negative_prompt: "low quality, blurry, distorted, deformed, disfigured, text, watermark, signature",
+        };
+        
+        // Call the fal.ai service
+        const result = await generateImageWithFalAi(enhancedPrompt, generationParams);
+        const imageUrl = result.imageUrl;
 
         // Store the design in Supabase
         const { data, error: designError } = await supabase
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
               mediumId: req.mediumId,
               generationParams: {
                 model: "fal-ai/flux/dev",
-                seed: falResponse.seed,
+                seed: result.seed,
                 image_size: "landscape_4_3",
               },
             },
