@@ -6,33 +6,51 @@
 
 | Technology | Purpose | Version |
 |------------|---------|---------|
-| Next.js | React framework with server-side rendering | 14.x (App Router) |
-| React | UI component library | 18.x |
-| TypeScript | Type-safe JavaScript | 5.x |
-| Tailwind CSS | Utility-first CSS framework | 3.x |
+| Next.js | React framework with server-side rendering | 15.1.0 (App Router) |
+| React | UI component library | 19.x |
+| TypeScript | Type-safe JavaScript | 5.8.x |
+| Tailwind CSS | Utility-first CSS framework | 3.4.17 |
 | shadcn/ui | Component library built on Radix UI | Latest |
 
 ### Backend Technologies
 
 | Technology | Purpose | Version |
 |------------|---------|---------|
-| Next.js API Routes | Backend API endpoints | 14.x |
-| Supabase | PostgreSQL database, authentication, storage | Latest |
-| Upstash Redis | Caching, rate limiting | Latest |
+| Next.js API Routes | Backend API endpoints | 15.1.0 |
+| Supabase | PostgreSQL database, authentication, storage | ^2.49.1 |
+| Upstash Redis | Caching, rate limiting | ^1.34.5 |
 | Vercel Blob Storage | File storage (planned) | Latest |
 
 ### AI/ML Technologies
 
-| Technology | Purpose | Integration |
+| Technology | Purpose | Version/Integration |
 |------------|---------|-------------|
-| fal.ai | Image generation | REST API |
-| OpenAI | Text generation, prompt enhancement | REST API |
+| fal.ai | Image generation | REST API via custom proxy |
+| OpenAI | Text generation, prompt enhancement | via @ai-sdk/openai ^1.2.5 |
+| AI SDK | AI integration framework | ai ^4.1.61 |
+| Framer Motion | Animation for AI visualizations | ^12.5.0 |
+
+#### Fal.ai Integration Details
+
+- **API Model**: fal-ai/flux/dev
+- **Integration Type**: Server-side proxy with client wrapper
+- **Authentication**: API key stored in environment variables
+- **Features**:
+  - Single image generation via `/api/generate-image`
+  - Batch generation via `/api/fal/batch-generate`
+  - Error handling and retry logic
+  - Database storage of generated images
+  - Gallery API for browsing and filtering images
 
 ### Third-Party Integrations
 
 | Service | Purpose | Integration |
 |---------|---------|-------------|
 | Printful | Print-on-demand fulfillment | REST API |
+| Authentication | User authentication | next-auth ^4.24.11, @auth/core ^0.34.2 |
+| Supabase | Database & auth | @supabase/supabase-js ^2.49.1, @supabase/ssr ^0.6.1 |
+| Email | Transactional emails | nodemailer ^6.10.0 |
+| UUID Generation | Unique identifiers | uuid ^11.1.0 |
 | Stripe | Payment processing (planned) | SDK |
 | Vercel Analytics | Usage analytics | SDK |
 
@@ -139,6 +157,7 @@ The MCP server provides a safe interface for AI assistants to interact with the 
 - **Page Load Time**: < 2 seconds for initial load
 - **Time to Interactive**: < 3 seconds
 - **Image Generation Time**: < 15 seconds for AI design generation
+- **Batch Generation Time**: < 5 minutes for 20 images
 - **API Response Time**: < 500ms for non-AI endpoints
 
 ### Browser Support
@@ -169,30 +188,73 @@ The MCP server provides a safe interface for AI assistants to interact with the 
 ```json
 {
   "dependencies": {
-    "@radix-ui/react-icons": "^1.3.0",
-    "@radix-ui/react-slot": "^1.0.2",
-    "@supabase/auth-helpers-nextjs": "^0.8.1",
-    "@supabase/supabase-js": "^2.38.4",
-    "@upstash/redis": "^1.25.1",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "lucide-react": "^0.292.0",
-    "next": "14.0.3",
-    "react": "^18",
-    "react-dom": "^18",
-    "tailwind-merge": "^2.0.0",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.2",
+    "@radix-ui/react-alert-dialog": "^1.1.4",
+    "@radix-ui/react-aspect-ratio": "^1.1.1",
+    "@radix-ui/react-avatar": "^1.1.2",
+    "@radix-ui/react-checkbox": "^1.1.3",
+    "@radix-ui/react-collapsible": "^1.1.2",
+    "@radix-ui/react-context-menu": "^2.2.4",
+    "@radix-ui/react-dialog": "^1.1.4",
+    "@radix-ui/react-dropdown-menu": "^2.1.4",
+    "@radix-ui/react-hover-card": "^1.1.4",
+    "@radix-ui/react-label": "^2.1.1",
+    "@radix-ui/react-menubar": "^1.1.4",
+    "@radix-ui/react-navigation-menu": "^1.2.3",
+    "@radix-ui/react-popover": "^1.1.4",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.2",
+    "@radix-ui/react-scroll-area": "^1.2.2",
+    "@radix-ui/react-select": "^2.1.4",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.2",
+    "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-switch": "^1.1.2",
+    "@radix-ui/react-tabs": "^1.1.2",
+    "@radix-ui/react-toast": "^1.2.4",
+    "@radix-ui/react-toggle": "^1.1.1",
+    "@radix-ui/react-toggle-group": "^1.1.1",
+    "@radix-ui/react-tooltip": "^1.1.6",
+    "autoprefixer": "^10.4.20",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "1.0.4",
+    "date-fns": "4.1.0",
+    "embla-carousel-react": "8.5.1",
+    "input-otp": "1.4.1",
+    "lucide-react": "^0.454.0",
+    "next": "15.1.0",
+    "next-themes": "^0.4.4",
+    "react": "^19",
+    "react-day-picker": "8.10.1",
+    "react-dom": "^19",
+    "react-hook-form": "^7.54.2",
+    "react-resizable-panels": "^2.1.7",
+    "recharts": "2.15.0",
+    "sonner": "^1.7.1",
+    "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "vaul": "^0.9.6",
+    "zod": "^3.24.2",
+    "@emotion/is-prop-valid": "^1.3.1",
+    "@supabase/supabase-js": "^2.49.1",
+    "@auth/core": "^0.34.2",
+    "nodemailer": "^6.10.0",
+    "framer-motion": "^12.5.0",
+    "ai": "^4.1.61",
+    "@ai-sdk/openai": "^1.2.5",
+    "@supabase/ssr": "^0.6.1",
+    "next-auth": "^4.24.11",
+    "uuid": "^11.1.0",
+    "@upstash/redis": "^1.34.5"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.0.3",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }
@@ -234,6 +296,7 @@ The MCP server provides a safe interface for AI assistants to interact with the 
 - **Caching**: Upstash Redis
 - **Storage**: Vercel Blob Storage (planned)
 - **CDN**: Vercel Edge Network
+- **Image Storage**: fal.ai hosted URLs with Supabase database references
 
 ### Deployment Process
 
@@ -259,6 +322,7 @@ The MCP server provides a safe interface for AI assistants to interact with the 
 - **Database**: Supabase handles scaling of PostgreSQL
 - **Caching**: Redis caching reduces database load
 - **CDN**: Static assets served via Vercel's global CDN
+- **Image Generation**: Batch processing with controlled concurrency
 
 ### Future Scaling Needs
 
@@ -266,3 +330,5 @@ The MCP server provides a safe interface for AI assistants to interact with the 
 - **Background Jobs**: Consider adding job queue for async processing
 - **Database Sharding**: Plan for potential sharding as user base grows
 - **Global Deployment**: Multi-region deployment for lower latency
+- **Image Generation Queue**: Implement proper queue system for high-volume generation
+- **Content Moderation**: Add AI-based content moderation for user-generated prompts

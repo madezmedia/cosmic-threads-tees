@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmic Threads Gallery</title>
+  <style>
+    :root {
+      --bg-color: #0a0a0a;
+      --text-color: #e0e0e0;
+      --accent-color: #ff00ff;
+      --secondary-color: #00ffff;
+      --card-bg: #1a1a1a;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+    }
+    
+    .filter-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      color: var(--accent-color);
+    }
+    
+    select {
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .gallery-item {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .gallery-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .gallery-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .gallery-content {
+      padding: 1.5rem;
+    }
+    
+    .gallery-title {
+      font-size: 1.2rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+    
+    .gallery-prompt {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .gallery-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+    
+    .gallery-tag {
+      background-color: rgba(255, 0, 255, 0.2);
+      color: var(--accent-color);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    
+    .gallery-style {
+      background-color: rgba(0, 255, 255, 0.2);
+      color: var(--secondary-color);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      font-size: 1.2rem;
+      color: var(--accent-color);
+    }
+    
+    .error {
+      background-color: rgba(255, 0, 0, 0.2);
+      color: #ff6b6b;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      margin: 2rem 0;
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 3rem;
+      gap: 1rem;
+    }
+    
+    button {
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    button:hover {
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .load-more {
+      background-color: transparent;
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      font-size: 1rem;
+      margin: 3rem auto;
+      display: block;
+    }
+    
+    .load-more:hover {
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      font-size: 1.2rem;
+      color: var(--text-color);
+      opacity: 0.7;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Cosmic Threads Gallery</h1>
+      <p class="subtitle">Explore AI-generated designs for our collection of cosmic-themed apparel and wall art.</p>
+    </header>
+    
+    <div class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Style</label>
+        <select id="style-filter">
+          <option value="">All Styles</option>
+          <!-- Will be populated dynamically -->
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label class="filter-label">Medium</label>
+        <select id="medium-filter">
+          <option value="">All Mediums</option>
+          <!-- Will be populated dynamically -->
+        </select>
+      </div>
+    </div>
+    
+    <div id="gallery" class="gallery">
+      <!-- Will be populated dynamically -->
+      <div class="loading">Loading gallery...</div>
+    </div>
+    
+    <button id="load-more" class="load-more" style="display: none;">Load More</button>
+  </div>
+  
+  <script>
+    // State
+    let currentPage = 0;
+    const pageSize = 12;
+    let hasMore = false;
+    let isLoading = true;
+    let currentStyle = '';
+    let currentMedium = '';
+    
+    // DOM Elements
+    const galleryEl = document.getElementById('gallery');
+    const styleFilterEl = document.getElementById('style-filter');
+    const mediumFilterEl = document.getElementById('medium-filter');
+    const loadMoreBtn = document.getElementById('load-more');
+    
+    // Event Listeners
+    styleFilterEl.addEventListener('change', () => {
+      currentStyle = styleFilterEl.value;
+      resetGallery();
+      loadGallery();
+    });
+    
+    mediumFilterEl.addEventListener('change', () => {
+      currentMedium = mediumFilterEl.value;
+      resetGallery();
+      loadGallery();
+    });
+    
+    loadMoreBtn.addEventListener('click', () => {
+      currentPage++;
+      loadGallery(true);
+    });
+    
+    // Functions
+    function resetGallery() {
+      galleryEl.innerHTML = '<div class="loading">Loading gallery...</div>';
+      currentPage = 0;
+      isLoading = true;
+      loadMoreBtn.style.display = 'none';
+    }
+    
+    async function loadGallery(append = false) {
+      try {
+        isLoading = true;
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.append('limit', pageSize.toString());
+        params.append('offset', (currentPage * pageSize).toString());
+        
+        if (currentStyle) {
+          params.append('style', currentStyle);
+        }
+        
+        if (currentMedium) {
+          params.append('medium', currentMedium);
+        }
+        
+        // Fetch data from API
+        const response = await fetch(`/api/gallery?${params.toString()}`);
+        
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Update filters if this is the first load
+        if (currentPage === 0 && !append) {
+          updateFilters(data.filters);
+        }
+        
+        // Update gallery
+        if (!append) {
+          galleryEl.innerHTML = '';
+        } else {
+          // Remove loading indicator if it exists
+          const loadingEl = galleryEl.querySelector('.loading');
+          if (loadingEl) {
+            loadingEl.remove();
+          }
+        }
+        
+        // Check if we have results
+        if (data.designs.length === 0 && !append) {
+          galleryEl.innerHTML = '<div class="no-results">No designs found matching your criteria.</div>';
+          loadMoreBtn.style.display = 'none';
+          return;
+        }
+        
+        // Render designs
+        data.designs.forEach(design => {
+          const designEl = createDesignElement(design);
+          galleryEl.appendChild(designEl);
+        });
+        
+        // Update pagination
+        hasMore = data.pagination.hasMore;
+        loadMoreBtn.style.display = hasMore ? 'block' : 'none';
+        
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        
+        if (!append) {
+          galleryEl.innerHTML = `<div class="error">Error loading gallery: ${error.message}</div>`;
+        } else {
+          galleryEl.appendChild(document.createElement('div')).classList.add('error').textContent = `Error loading more designs: ${error.message}`;
+        }
+        
+        loadMoreBtn.style.display = 'none';
+      } finally {
+        isLoading = false;
+      }
+    }
+    
+    function updateFilters(filters) {
+      // Update style filter
+      styleFilterEl.innerHTML = '<option value="">All Styles</option>';
+      filters.styles.forEach(style => {
+        const option = document.createElement('option');
+        option.value = style.id;
+        option.textContent = style.name;
+        styleFilterEl.appendChild(option);
+      });
+      
+      // Update medium filter
+      mediumFilterEl.innerHTML = '<option value="">All Mediums</option>';
+      filters.mediums.forEach(medium => {
+        const option = document.createElement('option');
+        option.value = medium.id;
+        option.textContent = medium.name;
+        mediumFilterEl.appendChild(option);
+      });
+    }
+    
+    function createDesignElement(design) {
+      const designEl = document.createElement('div');
+      designEl.classList.add('gallery-item');
+      
+      // Create image
+      const imageEl = document.createElement('img');
+      imageEl.classList.add('gallery-image');
+      imageEl.src = design.imageUrl;
+      imageEl.alt = design.name;
+      imageEl.loading = 'lazy';
+      
+      // Create content container
+      const contentEl = document.createElement('div');
+      contentEl.classList.add('gallery-content');
+      
+      // Create title
+      const titleEl = document.createElement('h3');
+      titleEl.classList.add('gallery-title');
+      titleEl.textContent = design.name;
+      
+      // Create prompt
+      const promptEl = document.createElement('p');
+      promptEl.classList.add('gallery-prompt');
+      promptEl.textContent = design.prompt;
+      
+      // Create meta container
+      const metaEl = document.createElement('div');
+      metaEl.classList.add('gallery-meta');
+      
+      // Add style
+      if (design.styleName) {
+        const styleEl = document.createElement('span');
+        styleEl.classList.add('gallery-style');
+        styleEl.textContent = design.styleName;
+        metaEl.appendChild(styleEl);
+      }
+      
+      // Add medium
+      if (design.medium) {
+        const mediumEl = document.createElement('span');
+        mediumEl.classList.add('gallery-tag');
+        mediumEl.textContent = design.medium.charAt(0).toUpperCase() + design.medium.slice(1);
+        metaEl.appendChild(mediumEl);
+      }
+      
+      // Add tags (up to 3)
+      if (design.tags && design.tags.length > 0) {
+        design.tags.slice(0, 3).forEach(tag => {
+          const tagEl = document.createElement('span');
+          tagEl.classList.add('gallery-tag');
+          tagEl.textContent = tag;
+          metaEl.appendChild(tagEl);
+        });
+      }
+      
+      // Assemble the elements
+      contentEl.appendChild(titleEl);
+      contentEl.appendChild(promptEl);
+      contentEl.appendChild(metaEl);
+      
+      designEl.appendChild(imageEl);
+      designEl.appendChild(contentEl);
+      
+      return designEl;
+    }
+    
+    // Initialize
+    loadGallery();
+  </script>
+</body>
+</html>

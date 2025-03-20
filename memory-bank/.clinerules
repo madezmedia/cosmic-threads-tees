@@ -94,6 +94,9 @@ This file captures important patterns, preferences, and project intelligence for
 - Include style guidance in prompts
 - Consider prompt templates for consistent results
 - Implement prompt enhancement for user inputs
+- Use style-specific terminology in prompts
+- Include medium-specific requirements (e.g., "suitable for screen printing")
+- Balance creativity and specificity in prompts
 
 ### Image Generation
 
@@ -101,6 +104,10 @@ This file captures important patterns, preferences, and project intelligence for
 - Consider background removal for final designs
 - Implement proper error handling for generation failures
 - Provide clear feedback during generation process
+- Use batch generation for initial content creation
+- Store generated images with rich metadata
+- Implement filtering and organization by style and medium
+- Use a proxy approach for API key security
 
 ## User Experience Patterns
 
@@ -141,6 +148,27 @@ This file captures important patterns, preferences, and project intelligence for
 - Test on multiple browsers and devices
 - Validate AI generation results
 
+## API Integration Patterns
+
+### Fal.ai Integration
+
+- Use server-side proxy approach for API key security
+- Implement type-safe client wrapper for the API
+- Handle API rate limits with controlled concurrency
+- Store generated images as URLs with database references
+- Include comprehensive metadata with generated images
+- Implement batch processing for efficient generation
+- Add proper error handling and fallbacks
+
+### Batch Processing
+
+- Implement controlled concurrency for API calls
+- Add delays between requests to avoid rate limiting
+- Store results in database as they are generated
+- Provide detailed logging and reporting
+- Implement error handling that continues processing after failures
+- Use TypeScript for type safety in request/response handling
+
 ## Known Quirks and Workarounds
 
 ### Next.js Theme Hydration Issues
@@ -167,6 +195,10 @@ This file captures important patterns, preferences, and project intelligence for
 - **Style**: Visual aesthetic applied to generated designs
 - **Mockup**: Visualization of design on a t-shirt
 - **Placement**: Location of design on a product (front, back, sleeve)
+- **Batch Generation**: Process of generating multiple designs at once
+- **Gallery**: Interface for browsing and filtering generated designs
+- **Medium**: Product type (t-shirt, wall art, etc.)
+- **Metadata**: Additional information stored with a design (style, tags, etc.)
 
 ---
 
