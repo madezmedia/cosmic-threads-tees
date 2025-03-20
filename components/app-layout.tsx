@@ -7,6 +7,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart, Menu, X, User, LogIn, LogOut } from "lucide-react"
+import RetroGrid from "@/components/retro-grid"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -33,7 +34,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Design", href: "/design" },
+    { name: "Design", href: "/create" },
     { name: "Try On Wall", href: "/try-on" },
     { name: "Gallery", href: "/gallery" },
     { name: "About", href: "/about" },
@@ -46,12 +47,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-md border-b border-white/10">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-deepSpace/80 backdrop-blur-md border-b border-silverChrome/10">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="flex items-center">
-              <span className="font-bold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-                ARTISTRY AI
+              <span className="font-display text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cosmicPurple via-magentaGlow to-neonTeal">
+                COSMIC THREADS
               </span>
             </Link>
 
@@ -61,10 +62,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`text-sm tracking-wider ${
+                  className={`font-mono text-sm uppercase tracking-wider ${
                     pathname === item.href
-                      ? "text-white font-medium"
-                      : "text-white/70 hover:text-white transition-colors"
+                      ? "text-neonTeal"
+                      : "text-silverChrome hover:text-neonTeal transition-colors"
                   }`}
                 >
                   {item.name}
@@ -76,36 +77,36 @@ export default function AppLayout({ children }: AppLayoutProps) {
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="border-white/20 text-white hover:bg-white/10 rounded-full">
+                    <Button variant="chrome" size="sm">
                       <User className="h-5 w-5 mr-2" />
                       {user?.full_name || user?.email}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-black/90 border-white/20">
+                  <DropdownMenuContent align="end" className="bg-deepSpace/90 border-silverChrome/20">
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard" className="cursor-pointer">
+                      <Link href="/dashboard" className="cursor-pointer font-mono text-sm">
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/orders" className="cursor-pointer">
+                      <Link href="/orders" className="cursor-pointer font-mono text-sm">
                         Orders
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/profile" className="cursor-pointer">
+                      <Link href="/profile" className="cursor-pointer font-mono text-sm">
                         Profile
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer font-mono text-sm">
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-full" asChild>
+                <Button variant="chrome" size="sm" asChild>
                   <Link href="/login">
                     <LogIn className="mr-2 h-4 w-4" />
                     Login
@@ -113,11 +114,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </Button>
               )}
 
-              <Button className="bg-white text-black hover:bg-white/90 rounded-full relative" asChild>
+              <Button variant="cosmic" size="sm" className="relative" asChild>
                 <Link href="/cart">
                   <ShoppingCart className="h-5 w-5" />
                   {cart.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-cosmicPurple to-magentaGlow text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                       {cart.length}
                     </span>
                   )}
@@ -127,11 +128,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center space-x-4">
-              <Button className="bg-white text-black hover:bg-white/90 rounded-full relative" asChild>
+              <Button variant="cosmic" size="sm" className="relative" asChild>
                 <Link href="/cart">
                   <ShoppingCart className="h-5 w-5" />
                   {cart.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-cosmicPurple to-magentaGlow text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                       {cart.length}
                     </span>
                   )}
@@ -139,12 +140,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
               </Button>
 
               <Button
-                variant="ghost"
-                className="p-2"
+                variant="chrome"
+                size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
               >
-                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
           </div>
@@ -153,43 +154,46 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* Mobile navigation */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 top-20 z-40 bg-black/95 backdrop-blur-md md:hidden">
+        <div className="fixed inset-0 top-20 z-40 bg-deepSpace/95 backdrop-blur-md md:hidden">
+          <RetroGrid className="absolute inset-0 opacity-5 z-[-1]" />
           <nav className="p-6 pt-10 flex flex-col h-full">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`py-3 px-4 text-lg ${
-                  pathname === item.href ? "text-white font-medium bg-white/10 rounded-lg" : "text-white/70"
+                className={`py-3 px-4 text-lg font-mono uppercase tracking-wider ${
+                  pathname === item.href 
+                    ? "text-neonTeal border border-neonTeal/30 bg-deepSpace/50 rounded-lg" 
+                    : "text-silverChrome hover:text-neonTeal transition-colors"
                 }`}
               >
                 {item.name}
               </Link>
             ))}
 
-            <div className="mt-6 border-t border-white/10 pt-6">
+            <div className="mt-6 border-t border-silverChrome/10 pt-6">
               {isAuthenticated ? (
                 <>
-                  <Link href="/dashboard" className="py-3 px-4 text-lg text-white/70 flex items-center">
+                  <Link href="/dashboard" className="py-3 px-4 text-lg font-mono uppercase tracking-wider text-silverChrome hover:text-neonTeal transition-colors flex items-center">
                     <User className="mr-2 h-5 w-5" />
                     Dashboard
                   </Link>
-                  <Link href="/orders" className="py-3 px-4 text-lg text-white/70 flex items-center">
+                  <Link href="/orders" className="py-3 px-4 text-lg font-mono uppercase tracking-wider text-silverChrome hover:text-neonTeal transition-colors flex items-center">
                     Orders
                   </Link>
-                  <Link href="/profile" className="py-3 px-4 text-lg text-white/70 flex items-center">
+                  <Link href="/profile" className="py-3 px-4 text-lg font-mono uppercase tracking-wider text-silverChrome hover:text-neonTeal transition-colors flex items-center">
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="py-3 px-4 text-lg text-white/70 flex items-center w-full text-left"
+                    className="py-3 px-4 text-lg font-mono uppercase tracking-wider text-silverChrome hover:text-neonTeal transition-colors flex items-center w-full text-left"
                   >
                     <LogOut className="mr-2 h-5 w-5" />
                     Logout
                   </button>
                 </>
               ) : (
-                <Link href="/login" className="py-3 px-4 text-lg text-white/70 flex items-center">
+                <Link href="/login" className="py-3 px-4 text-lg font-mono uppercase tracking-wider text-silverChrome hover:text-neonTeal transition-colors flex items-center">
                   <LogIn className="mr-2 h-5 w-5" />
                   Login / Register
                 </Link>
@@ -207,4 +211,3 @@ export default function AppLayout({ children }: AppLayoutProps) {
     </div>
   )
 }
-

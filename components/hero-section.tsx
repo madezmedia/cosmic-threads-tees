@@ -34,7 +34,7 @@ export default function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <Button size="lg" asChild>
-              <Link href="/design">
+              <Link href="/create">
                 Start Designing <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -81,4 +81,3 @@ export default function HeroSection() {
     </section>
   )
 }
-

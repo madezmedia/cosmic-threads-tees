@@ -4,35 +4,43 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    /* Cosmic Threads Retro-Futuristic Color System */
+    --deep-space: 0 0% 7%; /* #121212 */
+    --cosmic-purple: 275 84% 53%; /* #8A2BE2 */
+    --neon-teal: 174 72% 56%; /* #40E0D0 */
+    --magenta-glow: 300 100% 50%; /* #FF00FF */
+    --silver-chrome: 0 0% 75%; /* #C0C0C0 */
+    
+    /* Shadcn UI System Colors - Mapped to our palette */
+    --background: var(--deep-space);
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 3.9%;
+    --card: 0 0% 9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 3.9%;
+    --popover: 0 0% 9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 40% 98%;
+    --primary: var(--cosmic-purple);
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 334.5 85% 65%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: var(--neon-teal);
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 240 3.7% 15.9%;
+    --accent: var(--magenta-glow);
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: var(--neon-teal);
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
   }
 }
 
@@ -45,15 +53,19 @@
   }
 }
 
-/* Custom color variables */
+/* Custom color variables for direct access */
 :root {
-  --color-teal: rgb(64, 224, 208);
-  --color-magenta: rgb(255, 0, 255);
-  --color-chrome: rgb(192, 192, 192);
-  --color-black: rgb(0, 0, 0);
+  --color-deep-space: rgb(18, 18, 18);
+  --color-cosmic-purple: rgb(138, 43, 226);
+  --color-neon-teal: rgb(64, 224, 208);
+  --color-magenta-glow: rgb(255, 0, 255);
+  --color-silver-chrome: rgb(192, 192, 192);
 }
 
-/* Custom fonts */
+/* Font imports */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+/* Custom font for RetroFuture */
 @font-face {
   font-family: "RetroFuture";
   src: url("/fonts/retrofuture.woff2") format("woff2");
@@ -62,54 +74,17 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "SpaceAge";
-  src: url("/fonts/spaceage.woff2") format("woff2");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Custom utility classes */
-.font-display {
-  font-family: "RetroFuture", sans-serif;
-}
-
-.font-mono {
-  font-family: "Space Mono", monospace;
-}
-
-.text-teal {
-  color: var(--color-teal);
-}
-
-.text-magenta {
-  color: var(--color-magenta);
-}
-
-.text-chrome {
-  color: var(--color-chrome);
-}
-
-.bg-teal {
-  background-color: var(--color-teal);
-}
-
-.bg-magenta {
-  background-color: var(--color-magenta);
-}
-
-.bg-chrome {
-  background-color: var(--color-chrome);
-}
-
 /* Glow effects */
 .glow-teal {
-  text-shadow: 0 0 8px var(--color-teal);
+  text-shadow: 0 0 8px var(--color-neon-teal);
 }
 
 .glow-magenta {
-  text-shadow: 0 0 8px var(--color-magenta);
+  text-shadow: 0 0 8px var(--color-magenta-glow);
+}
+
+.glow-cosmic {
+  text-shadow: 0 0 8px var(--color-cosmic-purple);
 }
 
 /* Retro animations */
@@ -140,3 +115,37 @@
   background-size: 40px 40px;
 }
 
+/* Enhanced retro effects */
+.cosmic-gradient {
+  background: linear-gradient(135deg, var(--color-cosmic-purple), var(--color-magenta-glow));
+}
+
+.neon-border {
+  border: 1px solid transparent;
+  border-image: linear-gradient(to right, var(--color-neon-teal), var(--color-magenta-glow));
+  border-image-slice: 1;
+}
+
+.chrome-text {
+  color: var(--color-silver-chrome);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Animated background */
+@keyframes cosmic-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.cosmic-background {
+  background: linear-gradient(270deg, #121212, #1a0b2e, #261447);
+  background-size: 600% 600%;
+  animation: cosmic-flow 30s ease infinite;
+}

@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import { fontFamily } from "tailwindcss/defaultTheme"
 
 const config: Config = {
   darkMode: ["class"],
@@ -11,6 +12,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Cosmic Threads Retro-Futuristic Color Palette
+        deepSpace: "#121212", // Primary Background
+        cosmicPurple: "#8A2BE2", // Primary Action
+        neonTeal: "#40E0D0", // Secondary Action
+        magentaGlow: "#FF00FF", // Accent/Highlight
+        silverChrome: "#C0C0C0", // Text/UI Elements
+        
+        // Shadcn UI System Colors
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -62,6 +71,12 @@ const config: Config = {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      fontFamily: {
+        // Three-tier Typography System
+        display: ["RetroFuture", "var(--font-retro-future)", ...fontFamily.sans],
+        mono: ["Space Mono", "var(--font-space-mono)", ...fontFamily.mono],
+        sans: ["Inter", "var(--font-inter)", ...fontFamily.sans],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -86,4 +101,3 @@ const config: Config = {
   plugins: [require("tailwindcss-animate")],
 }
 export default config
-

@@ -1,8 +1,13 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { cn } from "@/lib/utils"
 
-export default function RetroGrid() {
+interface RetroGridProps {
+  className?: string
+}
+
+export default function RetroGrid({ className }: RetroGridProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -96,6 +101,5 @@ export default function RetroGrid() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-30" aria-hidden="true" />
+  return <canvas ref={canvasRef} className={cn("absolute inset-0 z-0 opacity-30", className)} aria-hidden="true" />
 }
-

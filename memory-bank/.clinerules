@@ -45,6 +45,34 @@ This file captures important patterns, preferences, and project intelligence for
 - Use CSS variables for theme colors and spacing
 - Maintain responsive design for all components
 
+### Retro-Futuristic Design System
+
+- **Color Palette**:
+  - `deepSpace`: Dark background color (#0a0a1a)
+  - `cosmicPurple`: Primary accent color (#9333ea)
+  - `neonTeal`: Secondary accent color (#40e0d0)
+  - `magentaGlow`: Highlight color (#ff00ff)
+  - `silverChrome`: Text and border color (#c0c0c0)
+
+- **Typography**:
+  - Use `font-mono` for UI elements, labels, and technical text
+  - Use `font-display` for headings and titles
+  - Use `font-sans` for body text and content
+  - Apply uppercase and tracking-wider to mono font elements
+
+- **UI Component Variants**:
+  - `cosmic`: Purple-based primary variant
+  - `neon`: Teal-based secondary variant
+  - `chrome`: Silver/metallic neutral variant
+  - `gradient`: Gradient effect for emphasis
+  - `glass`: Translucent background effect
+
+- **Effects**:
+  - Use subtle glow effects with box-shadow
+  - Apply gradient text for important headings
+  - Use border opacity for depth
+  - Implement subtle hover animations
+
 ## Implementation Patterns
 
 ### API Calls

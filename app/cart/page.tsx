@@ -99,7 +99,7 @@ export default function CartPage() {
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full"
                 asChild
               >
-                <Link href="/design">Start Shopping</Link>
+                <Link href="/create">Start Shopping</Link>
               </Button>
             </CardContent>
           </Card>
@@ -173,7 +173,7 @@ export default function CartPage() {
                 </CardContent>
                 <CardFooter className="flex justify-between p-4">
                   <Button variant="outline" className="border-white/20 text-white hover:bg-white/10" asChild>
-                    <Link href="/design">
+                    <Link href="/create">
                       <ArrowLeft className="mr-2 h-4 w-4" />
                       Continue Shopping
                     </Link>
@@ -276,4 +276,3 @@ export default function CartPage() {
     </AppLayout>
   )
 }
-

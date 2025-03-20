@@ -12,6 +12,12 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+        // Cosmic Threads custom variants
+        cosmic: "border-cosmicPurple/30 bg-cosmicPurple/20 text-cosmicPurple hover:bg-cosmicPurple/30",
+        neon: "border-neonTeal/30 bg-neonTeal/20 text-neonTeal hover:bg-neonTeal/30",
+        chrome: "border-silverChrome/30 bg-silverChrome/20 text-silverChrome hover:bg-silverChrome/30",
+        magenta: "border-magentaGlow/30 bg-magentaGlow/20 text-magentaGlow hover:bg-magentaGlow/30",
+        gradient: "border-transparent bg-gradient-to-r from-cosmicPurple to-magentaGlow text-white",
       },
     },
     defaultVariants: {
@@ -27,4 +33,3 @@ function Badge({ className, variant, ...props }: BadgeProps) {
 }
 
 export { Badge, badgeVariants }
-

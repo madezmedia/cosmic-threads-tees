@@ -207,7 +207,7 @@ export default function HowItWorksPage() {
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full"
               asChild
             >
-              <Link href="/design">
+              <Link href="/create">
                 Start Creating Now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -218,4 +218,3 @@ export default function HowItWorksPage() {
     </AppLayout>
   )
 }
-

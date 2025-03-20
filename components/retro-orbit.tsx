@@ -1,8 +1,13 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { cn } from "@/lib/utils"
 
-export default function RetroOrbit() {
+interface RetroOrbitProps {
+  className?: string
+}
+
+export default function RetroOrbit({ className }: RetroOrbitProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -79,6 +84,5 @@ export default function RetroOrbit() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="absolute inset-0 z-0 opacity-30" aria-hidden="true" />
+  return <canvas ref={canvasRef} className={cn("absolute inset-0 z-0 opacity-30", className)} aria-hidden="true" />
 }
-

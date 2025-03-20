@@ -16,6 +16,8 @@ export interface DesignState {
   isEnhancing: boolean
   placementOption: string
   generationProgress: number
+  colorScheme: string
+  size: number
 }
 
 // Define the initial state
@@ -28,8 +30,10 @@ const initialState: DesignState = {
   generatedDesign: null,
   isGenerating: false,
   isEnhancing: false,
-  placementOption: "front",
+  placementOption: "center",
   generationProgress: 0,
+  colorScheme: "original",
+  size: 80
 }
 
 // Define action types
@@ -44,6 +48,8 @@ type DesignAction =
   | { type: "SET_IS_ENHANCING"; payload: boolean }
   | { type: "SET_PLACEMENT_OPTION"; payload: string }
   | { type: "SET_GENERATION_PROGRESS"; payload: number }
+  | { type: "SET_COLOR_SCHEME"; payload: string }
+  | { type: "SET_SIZE"; payload: number }
   | { type: "RESET_DESIGN" }
 
 // Create the reducer function
@@ -74,6 +80,10 @@ function designReducer(state: DesignState, action: DesignAction): DesignState {
       return { ...state, placementOption: action.payload }
     case "SET_GENERATION_PROGRESS":
       return { ...state, generationProgress: action.payload }
+    case "SET_COLOR_SCHEME":
+      return { ...state, colorScheme: action.payload }
+    case "SET_SIZE":
+      return { ...state, size: action.payload }
     case "RESET_DESIGN":
       return {
         ...initialState,

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmic Threads - Redesign Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-deep-space: rgb(18, 18, 18);
+      --color-cosmic-purple: rgb(138, 43, 226);
+      --color-neon-teal: rgb(64, 224, 208);
+      --color-magenta-glow: rgb(255, 0, 255);
+      --color-silver-chrome: rgb(192, 192, 192);
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--color-deep-space);
+      color: white;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, var(--color-cosmic-purple), var(--color-magenta-glow));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .subtitle {
+      font-family: 'Space Mono', monospace;
+      color: var(--color-silver-chrome);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .card {
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    
+    .card h2 {
+      font-family: 'Space Mono', monospace;
+      color: var(--color-neon-teal);
+      margin-top: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 1.5rem;
+    }
+    
+    .card p {
+      color: var(--color-silver-chrome);
+      line-height: 1.6;
+    }
+    
+    .button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--color-cosmic-purple);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin-top: 1rem;
+    }
+    
+    .button:hover {
+      background-color: var(--color-magenta-glow);
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    
+    .button.neon {
+      background-color: var(--color-neon-teal);
+      color: var(--color-deep-space);
+    }
+    
+    .button.neon:hover {
+      background-color: var(--color-neon-teal);
+      box-shadow: 0 0 10px rgba(64, 224, 208, 0.5);
+    }
+    
+    .button.chrome {
+      background-color: rgba(192, 192, 192, 0.1);
+      border: 1px solid var(--color-silver-chrome);
+      color: var(--color-silver-chrome);
+    }
+    
+    .button.chrome:hover {
+      background-color: rgba(192, 192, 192, 0.2);
+      box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+    }
+    
+    .button.gradient {
+      background: linear-gradient(to right, var(--color-cosmic-purple), var(--color-magenta-glow));
+    }
+    
+    .button.gradient:hover {
+      background: linear-gradient(to right, var(--color-magenta-glow), var(--color-cosmic-purple));
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+    
+    .design-flow {
+      margin-top: 3rem;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 2rem;
+      border: 1px solid rgba(138, 43, 226, 0.2);
+    }
+    
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 30%;
+    }
+    
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--color-cosmic-purple);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      margin-bottom: 1rem;
+    }
+    
+    .step.active .step-number {
+      background-color: var(--color-neon-teal);
+      color: var(--color-deep-space);
+      box-shadow: 0 0 10px rgba(64, 224, 208, 0.5);
+    }
+    
+    .step-title {
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .step-description {
+      font-size: 0.9rem;
+      color: var(--color-silver-chrome);
+    }
+    
+    .step-content {
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Cosmic Threads</h1>
+      <div class="subtitle">AI-Generated T-Shirts & Wall Art</div>
+    </header>
+    
+    <div class="grid">
+      <div class="card">
+        <h2>Cosmic Button Variants</h2>
+        <p>Our redesigned button system features multiple variants to match our retro-futuristic aesthetic.</p>
+        <a href="#" class="button">Cosmic (Default)</a>
+        <a href="#" class="button neon">Neon</a>
+        <a href="#" class="button chrome">Chrome</a>
+        <a href="#" class="button gradient">Gradient</a>
+      </div>
+      
+      <div class="card">
+        <h2>Typography System</h2>
+        <p>Our three-tier typography system includes:</p>
+        <ul>
+          <li style="font-family: 'Space Mono', monospace; margin-bottom: 0.5rem;">Space Mono for UI elements and labels</li>
+          <li style="font-family: 'Inter', sans-serif; margin-bottom: 0.5rem;">Inter for body text and content</li>
+          <li style="font-family: serif; margin-bottom: 0.5rem;">RetroFuture for headings and display text (fallback shown)</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="design-flow">
+      <h2 style="text-align: center; margin-bottom: 2rem; font-family: 'Space Mono', monospace; color: var(--color-neon-teal);">3-STEP DESIGN FLOW</h2>
+      
+      <div class="steps">
+        <div class="step active">
+          <div class="step-number">1</div>
+          <div class="step-title">Concept</div>
+          <div class="step-description">Select product and describe your design</div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-title">Customize</div>
+          <div class="step-description">Fine-tune your design options</div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">Checkout</div>
+          <div class="step-description">Complete your order</div>
+        </div>
+      </div>
+      
+      <div class="step-content">
+        <h3 style="font-family: 'Space Mono', monospace; color: white;">Create Your Concept</h3>
+        <p>This is where you would select your product, choose a style, and describe your design idea.</p>
+      </div>
+      
+      <div class="navigation">
+        <button class="button chrome" disabled>Back</button>
+        <button class="button cosmic">Next</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

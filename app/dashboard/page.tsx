@@ -78,7 +78,7 @@ export default function DashboardPage() {
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full"
               asChild
             >
-              <Link href="/design">
+              <Link href="/create">
                 <Palette className="mr-2 h-4 w-4" />
                 New Design
               </Link>
@@ -133,14 +133,14 @@ export default function DashboardPage() {
                   <Card key={design.id} className="bg-black/30 border-white/10 overflow-hidden">
                     <div className="aspect-[4/3] bg-black/50 relative group">
                       <img
-                        src={design.image_url || "/placeholder.svg?text=No+Preview"}
-                        alt={design.name}
+                        src={design.content || "/placeholder.svg?text=No+Preview"}
+                        alt={`Design ${design.id}`}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-4">
                         <div className="flex gap-2">
                           <Button size="sm" className="bg-white text-black hover:bg-white/90" asChild>
-                            <Link href={`/design/${design.id}`}>Edit</Link>
+                            <Link href={`/create/${design.id}`}>Edit</Link>
                           </Button>
                           <Button
                             size="sm"
@@ -154,7 +154,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-medium text-white mb-1">{design.name}</h3>
+                      <h3 className="font-medium text-white mb-1">Design {design.id}</h3>
                       <p className="text-sm text-white/60 line-clamp-1">{design.prompt}</p>
                     </CardContent>
                   </Card>
@@ -163,7 +163,7 @@ export default function DashboardPage() {
                 {/* Create new design card */}
                 <Card className="bg-black/30 border-white/10 border-dashed h-full min-h-[240px]">
                   <CardContent className="p-0 h-full">
-                    <Link href="/design" className="flex flex-col items-center justify-center h-full p-6 text-center">
+                    <Link href="/create" className="flex flex-col items-center justify-center h-full p-6 text-center">
                       <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
                         <Plus className="h-8 w-8 text-purple-400" />
                       </div>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
                     className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full"
                     asChild
                   >
-                    <Link href="/design">
+                    <Link href="/create">
                       <Palette className="mr-2 h-4 w-4" />
                       Start Designing
                     </Link>
@@ -270,7 +270,7 @@ export default function DashboardPage() {
                     className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full"
                     asChild
                   >
-                    <Link href="/design">
+                    <Link href="/create">
                       <Palette className="mr-2 h-4 w-4" />
                       Create and Order
                     </Link>
@@ -313,4 +313,3 @@ export default function DashboardPage() {
     </AppLayout>
   )
 }
-
