@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ImageIcon, ThumbsUp, ThumbsDown, ArrowRight, Palette } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import DesignSuggestions from "@/components/design-suggestions"
-import StyleSelector from "@/components/style-selector"
+import StyleGuideSelector from "@/components/style-guide-selector"
 import PromptEnhancer from "@/components/prompt-enhancer"
 import ImageGenerationExperience from "@/components/image-generation-experience"
 import { useApp } from "@/context/app-context"
@@ -25,6 +25,9 @@ export default function DesignPage() {
   const [generatedDesign, setGeneratedDesign] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("text-prompt")
   const [selectedStyle, setSelectedStyle] = useState("abstract")
+  const handleToggleStyle = (styleId: string) => {
+    setSelectedStyle(styleId)
+  }
   const [complexity, setComplexity] = useState(70)
   const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null)
   const [showImageGenerator, setShowImageGenerator] = useState(false)
@@ -70,7 +73,6 @@ export default function DesignPage() {
 
       // Create a design object that can be saved
       const newDesign: Partial<Design> = {
-        name: designPrompt.substring(0, 50),
         prompt: enhancedPrompt || designPrompt,
         content: imageUrl,
         type: "image",
@@ -92,7 +94,7 @@ export default function DesignPage() {
     if (!isAuthenticated) {
       // Prompt to login
       if (confirm("You need to be logged in to save designs. Would you like to login now?")) {
-        router.push("/login?redirect=design")
+        router.push("/login?redirect=create")
       }
       return
     }
@@ -102,7 +104,6 @@ export default function DesignPage() {
     setIsSaving(true)
     try {
       const { data, error } = await designApi.saveDesign({
-        name: designPrompt.substring(0, 50),
         prompt: enhancedPrompt || designPrompt,
         content: generatedDesign,
         type: "image",
@@ -176,11 +177,12 @@ export default function DesignPage() {
                           />
                         </div>
 
-                        <StyleSelector
-                          selectedStyle={selectedStyle}
-                          onSelectStyle={setSelectedStyle}
+                        <StyleGuideSelector
+                          selectedStyles={[selectedStyle]}
+                          onToggleStyle={handleToggleStyle}
                           complexity={complexity}
                           onSetComplexity={setComplexity}
+                          selectedMedium={null}
                         />
 
                         {designPrompt.trim().length > 0 && (
@@ -347,4 +349,3 @@ export default function DesignPage() {
     </AppLayout>
   )
 }
-
