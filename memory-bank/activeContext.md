@@ -144,6 +144,26 @@ Fixed a React hydration mismatch error related to the theme implementation:
 
 4. **Knowledge Gained**: This is a common issue with Next.js applications that use theming, particularly with dark mode. The `suppressHydrationWarning` attribute is a recommended solution for theme-related hydration issues.
 
+## Recent Updates
+
+### Fixed Duplicated Design Pages (March 20, 2025)
+
+Resolved an issue with duplicated design pages and incorrect component usage:
+
+1. **Issue Identified**: The app had two design pages (`/design` and `/create`) with different implementations:
+   - The `/design` page was incorrectly trying to use the `StyleSelector` component which requires the `DesignContext` provider
+   - The `/design` page wasn't wrapped in a `DesignProvider`, causing errors
+
+2. **Solution Implemented**:
+   - Updated the `/design` page to use the `StyleGuideSelector` component instead, which accepts props directly
+   - Added a `handleToggleStyle` function to properly handle style selection
+   - Updated the login redirect from `/design` to `/create` to ensure users are redirected to the proper page after login
+
+3. **Result**: Both pages can now coexist without conflicts:
+   - The `/create` page uses the context-based approach with the `DesignProvider`
+   - The `/design` page uses the props-based approach without requiring context
+   - All changes have been deployed to production
+
 ## Next Steps
 
 Based on the current progress, the following next steps have been identified:
@@ -174,6 +194,7 @@ Based on the current progress, the following next steps have been identified:
    - Implement lazy loading for heavy components
    - Optimize image loading and processing
    - Add proper loading states throughout the workflow
+   - Resolve any remaining duplicate code or components
 
 ## Active Decisions and Considerations
 

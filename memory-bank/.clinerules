@@ -249,6 +249,20 @@ This file captures important patterns, preferences, and project intelligence for
   2. Implement a "flash of incorrect theme" prevention technique
   3. Use CSS variables instead of classes for theming
 
+### Component Context Dependencies
+
+- **Issue**: Some components require specific context providers to function correctly.
+- **Example**: The `StyleSelector` component requires the `DesignContext` provider, while the `StyleGuideSelector` component accepts props directly.
+- **Pattern**: 
+  - Context-dependent components: Used within specific provider wrappers (e.g., `StyleSelector` within `DesignProvider`)
+  - Standalone components: Accept props directly without context dependencies (e.g., `StyleGuideSelector`)
+- **Best Practice**: 
+  - Document context dependencies in component comments
+  - Use context-dependent components only within appropriate providers
+  - Consider creating standalone versions of components for flexibility
+  - When duplicating functionality, prefer props-based components for better reusability
+- **Identification**: Components using hooks like `useDesign()` require their respective context providers
+
 ## Project-Specific Terminology
 
 - **Design**: A user-created t-shirt design
