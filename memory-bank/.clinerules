@@ -150,6 +150,40 @@ This file captures important patterns, preferences, and project intelligence for
 
 ## API Integration Patterns
 
+## MCP Tools Usage Patterns
+
+### Supabase MCP Server
+- Use safe mode for database exploration and analysis
+- Enable write mode only when data modifications are required
+- Document schema changes in memory-bank before implementing
+- Use Auth Admin SDK for user management operations
+
+### GitHub MCP Server
+- Use for automated documentation updates
+- Create issues for discovered bugs or improvements
+- Submit PRs for small, well-defined changes
+- Update project documentation as features evolve
+
+### Filesystem MCP Server
+- Use for analyzing component hierarchies
+- Search across codebase for implementation patterns
+- Explore directory structures for asset organization
+- Analyze metadata for generated images
+
+### Fetch MCP
+- Test API endpoints before implementation
+- Validate responses from third-party services
+- Research design trends and references
+- Monitor API performance and response times
+
+### Browser Tools MCP
+- Run accessibility audits on new components
+- Test responsive design across viewports
+- Analyze performance metrics for optimization
+- Debug console errors during development
+
+## API Integration Patterns
+
 ### Fal.ai Integration
 
 - Use server-side proxy approach for API key security

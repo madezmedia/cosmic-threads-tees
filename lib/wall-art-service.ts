@@ -1,126 +1,98 @@
-import { fetchPrintfulProduct } from "./printful-api"
+import { generateImageWithFalAi, FalAiResponse } from '@/lib/fal-ai-service';
+import { enhancePrompt, EnhancedPromptResponse } from '@/lib/prompt-service';
+import { supabase } from '@/lib/supabase';
 
-// Wall art product categories based on research
-export const WALL_ART_CATEGORIES = {
-  FRAMED_POSTERS: {
-    name: "Framed Posters",
-    description: "High-quality framed posters with various paper options",
-    productIds: [2, 172], // Enhanced Matte Paper and Premium Luster Photo Paper
-    image: "/images/categories/framed-posters.jpg",
-  },
-  CANVAS: {
-    name: "Canvas Prints",
-    description: "Gallery-quality canvas prints with vibrant colors",
-    productIds: [1, 162], // Standard Canvas and Framed Canvas
-    image: "/images/categories/canvas-prints.jpg",
-  },
-  METAL: {
-    name: "Metal Prints",
-    description: "Glossy metal prints with stunning visual impact",
-    productIds: [105], // Metal Prints
-    image: "/images/categories/metal-prints.jpg",
-  },
-  POSTER: {
-    name: "Posters",
-    description: "Affordable high-quality poster prints",
-    productIds: [3, 4], // Enhanced Matte Paper Poster and Premium Luster Photo Paper Poster
-    image: "/images/categories/posters.jpg",
-  },
+type WallArtStyle = 'minimalist' | 'abstract' | 'landscape';
+
+const styleKeywords: Record<WallArtStyle, string> = {
+  'minimalist': 'clean lines, simple composition, negative space, limited color palette',
+  'abstract': 'non-representational, geometric shapes, bold colors, expressive',
+  'landscape': 'scenic view, horizon, natural elements, atmospheric',
+  // Add more styles as needed
+};
+
+export async function generateWallArtDesign(
+  prompt: string, 
+  style: string, 
+  dimensions: { width: number, height: number },
+  options: { enhancePrompt: boolean, highResolution: boolean }
+): Promise<{
+    id: any;
+    imageUrl: string;
+    prompt: string;
+    processedPrompt: string;
+    style: string;
+    dimensions: {
+        width: number;
+        height: number;
+    };
+}> {
+  // Process and enhance the prompt if requested
+  const processedPrompt = options.enhancePrompt 
+    ? await enhancePrompt(prompt, style, 'wall-art')
+    : addWallArtKeywords(prompt, style as WallArtStyle);
+  
+  // Configure generation parameters based on wall art needs
+  const generationParams = getWallArtParams(style, dimensions, options);
+  
+  // Generate the image
+  const imageResult = await generateImageWithFalAi(processedPrompt, generationParams);
+  
+  // Process for high-quality printing if needed
+  const processedImage = options.highResolution 
+    ? await upscaleImage(imageResult.imageUrl)
+    : imageResult.imageUrl;
+  
+  // Save to database
+  const designId = await saveWallArtDesign(processedPrompt, processedImage, style, dimensions);
+  
+  return {
+    id: designId,
+    imageUrl: processedImage,
+    prompt,
+    processedPrompt,
+    style,
+    dimensions
+  };
 }
 
-// Common sizes for wall art
-export const WALL_ART_SIZES = {
-  SMALL: {
-    name: "Small",
-    dimensions: ["8×10″", "8×12″", "10×10″"],
-    recommendedFor: "Small spaces, bathrooms, desks",
-  },
-  MEDIUM: {
-    name: "Medium",
-    dimensions: ["12×16″", "12×18″", "16×16″"],
-    recommendedFor: "Bedrooms, offices, small living rooms",
-  },
-  LARGE: {
-    name: "Large",
-    dimensions: ["18×24″", "20×24″", "20×30″"],
-    recommendedFor: "Living rooms, dining rooms, feature walls",
-  },
-  EXTRA_LARGE: {
-    name: "Extra Large",
-    dimensions: ["24×36″", "30×40″", "36×36″"],
-    recommendedFor: "Large spaces, statement pieces, galleries",
-  },
+function addWallArtKeywords(prompt: string, style: WallArtStyle) {
+  // Add specific keywords for wall art based on style
+  return `${prompt}, ${styleKeywords[style] || ''}, high quality wall art, home decor, art print`;
 }
 
-// Get all wall art product IDs
-export function getAllWallArtProductIds(): number[] {
-  return Object.values(WALL_ART_CATEGORIES).flatMap((category) => category.productIds)
+function getWallArtParams(style: string, dimensions: { width: number; height: number; }, options: { highResolution: boolean; }) {
+  // Configure generation parameters specific to wall art
+  return {
+    guidance_scale: style === 'minimalist' ? 7.0 : 8.0,
+    num_inference_steps: options.highResolution ? 50 : 35,
+    width: dimensions.width,
+    height: dimensions.height,
+    // Add style-specific parameters
+  };
 }
 
-// Fetch all wall art products
-export async function fetchAllWallArtProducts() {
-  const productIds = getAllWallArtProductIds()
-  const productPromises = productIds.map((id) => fetchPrintfulProduct(id))
-
-  try {
-    return await Promise.all(productPromises)
-  } catch (error) {
-    console.error("Error fetching wall art products:", error)
-    throw error
-  }
-}
-
-// Get products by category
-export async function getProductsByCategory(categoryKey: keyof typeof WALL_ART_CATEGORIES) {
-  const category = WALL_ART_CATEGORIES[categoryKey]
-  if (!category) {
-    throw new Error(`Category ${categoryKey} not found`)
-  }
-
-  const productPromises = category.productIds.map((id) => fetchPrintfulProduct(id))
-
-  try {
-    return await Promise.all(productPromises)
-  } catch (error) {
-    console.error(`Error fetching products for category ${categoryKey}:`, error)
-    throw error
-  }
-}
-
-// Get variant ID by size
-export function getVariantIdBySize(product: any, size: string): number | null {
-  if (!product || !product.variants) {
-    return null
-  }
-
-  const variant = product.variants.find((v: any) => v.name.includes(size) || v.size === size)
-
-  return variant ? variant.id : null
-}
-
-// Generate mockup for a wall art product
-export async function generateWallArtMockup(imageUrl: string, productId: number, variantId: number) {
-  try {
-    const response = await fetch("/api/printful/mockups", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        productId,
-        variantId,
-        imageUrl,
-      }),
+async function saveWallArtDesign(prompt: string, imageUrl: string, style: string, dimensions: { width: number; height: number; }) {
+  // Store the design in Supabase
+  const { data, error } = await supabase
+    .from('wall_art_designs')
+    .insert({
+      prompt,
+      image_url: imageUrl,
+      style,
+      width: dimensions.width,
+      height: dimensions.height,
+      created_at: new Date()
     })
-
-    if (!response.ok) {
-      throw new Error(`Failed to generate mockup: ${response.status} ${response.statusText}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Error generating mockup:", error)
-    throw error
-  }
+    .select('id');
+    
+  if (error) throw error;
+  return data[0].id;
 }
 
+async function upscaleImage(imageUrl: string) {
+  // Implement image upscaling for high-quality prints
+  // This could use another fal.ai endpoint or a different service
+  // For now, return the original as placeholder
+  return imageUrl;
+}

@@ -1,236 +1,142 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useDesign } from "@/context/design-context"
 import { Card, CardContent } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
-import type { TShirt, Design } from "@/lib/types"
-import { RotateCw, ZoomIn, Move, Download, Share2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { Badge } from "@/components/ui/badge"
+import { Sparkles, RefreshCw } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
-interface DesignPreviewProps {
-  tshirt: TShirt
-  design: Design
-  onFinalize: () => void
-}
+export default function DesignPreview() {
+  const { state, dispatch } = useDesign()
+  const { medium, styles, complexity, placementOption, generatedDesign, isGenerating, generationProgress } = state
 
-export default function DesignPreview({ tshirt, design, onFinalize }: DesignPreviewProps) {
-  const [position, setPosition] = useState({ x: 50, y: 40 })
-  const [size, setSize] = useState(50)
-  const [rotation, setRotation] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(tshirt.colors[0])
-  const { toast } = useToast()
-
-  const handlePositionChange = (axis: "x" | "y", value: number[]) => {
-    setPosition((prev) => ({ ...prev, [axis]: value[0] }))
-  }
-
-  const handleSizeChange = (value: number[]) => {
-    setSize(value[0])
-  }
-
-  const handleRotationChange = (value: number[]) => {
-    setRotation(value[0])
-  }
-
-  const handleColorChange = (color: string) => {
-    setSelectedColor(color)
-  }
-
-  const handleDownload = () => {
-    // In a real app, this would generate and download the design
-    toast({
-      title: "Design downloaded",
-      description: "Your design has been downloaded successfully.",
-    })
-  }
-
-  const handleShare = () => {
-    // In a real app, this would open a share dialog
-    toast({
-      title: "Share your design",
-      description: "Sharing functionality would be implemented here.",
-    })
+  // Function to handle regeneration
+  const handleRegenerate = () => {
+    // In a real implementation, this would trigger the generation process
+    // For now, we'll just set isGenerating to true
+    dispatch({ type: "SET_IS_GENERATING", payload: true })
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div>
-        <h2 className="text-2xl font-display font-bold mb-6 text-chrome">PREVIEW YOUR DESIGN</h2>
-        <Card className="overflow-hidden bg-black border-chrome/20">
-          <CardContent className="p-0 relative">
-            <div
-              className="aspect-square flex items-center justify-center p-4"
-              style={{ backgroundColor: selectedColor }}
-            >
-              <div className="relative w-full h-full">
-                {/* T-shirt mockup */}
-                <img
-                  src={tshirt.mockupImage || "/placeholder.svg?height=400&width=300&text=T-Shirt+Mockup"}
-                  alt="T-shirt mockup"
-                  className="w-full h-full object-contain"
-                />
+    <Card className="bg-black border-chrome/20 sticky top-24">
+      <CardContent className="pt-6">
+        <h2 className="text-2xl font-display font-bold mb-6 text-chrome">DESIGN PREVIEW</h2>
 
-                {/* Design overlay */}
+        <div className="aspect-square bg-black/50 border border-chrome/30 rounded-lg flex items-center justify-center overflow-hidden">
+          {isGenerating ? (
+            <div className="flex flex-col items-center justify-center text-center p-8">
+              <div className="relative h-24 w-24 mb-4">
+                <div className="absolute inset-0 rounded-full border-4 border-chrome/20"></div>
                 <div
-                  className="absolute"
-                  style={{
-                    top: `${position.y}%`,
-                    left: `${position.x}%`,
-                    transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${size / 50})`,
-                    maxWidth: "60%",
-                    maxHeight: "60%",
-                  }}
-                >
-                  {design.type === "image" ? (
-                    <img
-                      src={design.content || "/placeholder.svg"}
-                      alt="Design"
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        fontFamily: design.settings.fontFamily || "Orbitron",
-                        fontSize: `${design.settings.fontSize || 24}px`,
-                        fontWeight: design.settings.fontWeight || "normal",
-                        color: design.settings.color || "#40E0D0",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {design.content}
-                    </div>
-                  )}
+                  className="absolute inset-0 rounded-full border-4 border-t-magenta border-r-transparent border-b-transparent border-l-transparent animate-spin"
+                  style={{ animationDuration: "1.5s" }}
+                ></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-lg font-mono text-magenta">{Math.round(generationProgress)}%</span>
                 </div>
               </div>
+              <p className="text-lg font-medium text-chrome">Generating your design...</p>
+              <p className="text-sm text-chrome/60 mt-2 font-mono">
+                Our AI is creating something cosmic just for you
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div>
-        <h2 className="text-2xl font-display font-bold mb-6 text-chrome">CUSTOMIZE YOUR DESIGN</h2>
-        <Card className="bg-black border-chrome/20">
-          <CardContent className="pt-6 space-y-6">
-            <div>
-              <Label className="text-base font-mono uppercase tracking-wider text-chrome mb-2 block">
-                T-Shirt Color
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {tshirt.colors.map((color) => (
-                  <button
-                    key={color}
-                    className={`w-8 h-8 rounded-full border-2 ${
-                      selectedColor === color ? "border-magenta" : "border-transparent"
-                    }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleColorChange(color)}
-                    aria-label={`Select ${color} color`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-base font-mono uppercase tracking-wider text-chrome mb-2 block flex items-center">
-                <Move className="h-4 w-4 mr-2 text-teal" />
-                Position
-              </Label>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label htmlFor="position-x" className="text-sm text-chrome/80">
-                      Horizontal: {position.x}%
-                    </Label>
-                  </div>
-                  <Slider
-                    id="position-x"
-                    min={20}
-                    max={80}
-                    step={1}
-                    value={[position.x]}
-                    onValueChange={(value) => handlePositionChange("x", value)}
-                    className="[&>span]:bg-teal"
-                  />
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1">
-                    <Label htmlFor="position-y" className="text-sm text-chrome/80">
-                      Vertical: {position.y}%
-                    </Label>
-                  </div>
-                  <Slider
-                    id="position-y"
-                    min={20}
-                    max={80}
-                    step={1}
-                    value={[position.y]}
-                    onValueChange={(value) => handlePositionChange("y", value)}
-                    className="[&>span]:bg-teal"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-base font-mono uppercase tracking-wider text-chrome mb-2 block flex items-center">
-                <ZoomIn className="h-4 w-4 mr-2 text-teal" />
-                Size: {size}%
-              </Label>
-              <Slider
-                min={20}
-                max={100}
-                step={5}
-                value={[size]}
-                onValueChange={handleSizeChange}
-                className="[&>span]:bg-teal"
+          ) : generatedDesign ? (
+            <div className="relative w-full h-full flex items-center justify-center p-4">
+              <img
+                src={generatedDesign.content}
+                alt="Generated design"
+                className="max-w-full max-h-full object-contain"
               />
             </div>
-
-            <div>
-              <Label className="text-base font-mono uppercase tracking-wider text-chrome mb-2 block flex items-center">
-                <RotateCw className="h-4 w-4 mr-2 text-teal" />
-                Rotation: {rotation}°
-              </Label>
-              <Slider
-                min={-180}
-                max={180}
-                step={5}
-                value={[rotation]}
-                onValueChange={handleRotationChange}
-                className="[&>span]:bg-teal"
+          ) : medium ? (
+            <div className="text-center p-8">
+              <img
+                src={medium.previewImage}
+                alt={medium.name}
+                className="h-32 w-32 mx-auto mb-4 object-contain opacity-30"
               />
+              <p className="text-lg font-medium text-chrome">Ready to generate</p>
+              <p className="text-sm text-chrome/60 mt-2 font-mono">
+                Complete your selections and click Generate
+              </p>
             </div>
+          ) : (
+            <div className="text-center p-8">
+              <Sparkles className="h-12 w-12 mx-auto mb-4 text-chrome/40" />
+              <p className="text-lg font-medium text-chrome">No design generated yet</p>
+              <p className="text-sm text-chrome/60 mt-2 font-mono">
+                Select a product type to get started
+              </p>
+            </div>
+          )}
+        </div>
 
-            <div className="pt-4 flex flex-col sm:flex-row gap-3">
-              <Button
-                variant="outline"
-                className="flex-1 border-chrome/30 text-chrome hover:bg-chrome/10 font-mono uppercase tracking-wider"
-                onClick={handleDownload}
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Download
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 border-chrome/30 text-chrome hover:bg-chrome/10 font-mono uppercase tracking-wider"
-                onClick={handleShare}
-              >
-                <Share2 className="mr-2 h-4 w-4" />
-                Share
-              </Button>
-              <Button
-                className="flex-1 bg-magenta hover:bg-magenta/80 text-white border-2 border-magenta/20 font-mono uppercase tracking-wider"
-                onClick={onFinalize}
-              >
-                Add to Cart
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+        {generatedDesign && (
+          <div className="mt-4 flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRegenerate}
+              disabled={isGenerating}
+              className="border-chrome/30 text-chrome hover:bg-chrome/10 font-mono uppercase tracking-wider"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Regenerate
+            </Button>
+          </div>
+        )}
+
+        {/* Design details section */}
+        {(medium || styles.length > 0 || generatedDesign) && (
+          <div className="mt-6 bg-black/40 border border-chrome/20 rounded-lg p-4 space-y-3">
+            <Label className="text-sm font-mono uppercase tracking-wider text-chrome mb-2 block">
+              Design Details
+            </Label>
+            
+            {medium && (
+              <div className="flex items-center gap-2">
+                <span className="text-chrome text-sm">Product:</span>
+                <Badge className="bg-magenta/20 text-magenta">{medium.name}</Badge>
+              </div>
+            )}
+            
+            {styles.length > 0 && (
+              <div>
+                <span className="text-chrome text-sm">Styles:</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {styles.map((styleId) => (
+                    <Badge key={styleId} className="bg-teal/20 text-teal">
+                      {styleId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {placementOption && (
+              <div className="flex items-center gap-2">
+                <span className="text-chrome text-sm">Placement:</span>
+                <Badge className="bg-chrome/20 text-chrome">
+                  {placementOption.charAt(0).toUpperCase() + placementOption.slice(1)}
+                </Badge>
+              </div>
+            )}
+            
+            {complexity > 0 && (
+              <div>
+                <span className="text-chrome text-sm">Complexity: {complexity}%</span>
+                <div className="h-1.5 w-full bg-chrome/20 rounded-full overflow-hidden mt-1">
+                  <div
+                    className="h-full bg-teal rounded-full"
+                    style={{ width: `${complexity}%`, transition: "width 0.3s ease" }}
+                  ></div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }
-
