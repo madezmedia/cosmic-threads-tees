@@ -255,11 +255,16 @@ export async function fetchCachedCatalogProducts(
 
 /**
  * Find t-shirts suitable for AI-generated designs
+ * 
+ * This function fetches t-shirts that are suitable for AI-generated designs,
+ * including both front image print (DTG) and all-over print (DTF) t-shirts.
  */
 export async function findDesignFriendlyTshirts(): Promise<CatalogProduct[]> {
-  return fetchCatalogProducts({
+  // Fetch both DTG (front image print) and DTF (all-over print) t-shirts
+  return fetchCachedCatalogProducts({
     types: ["T-SHIRT"],
-    techniques: ["dtg"],
+    techniques: ["dtg", "dtf"],
+    limit: 100,
   });
 }
 
