@@ -189,17 +189,18 @@
         const response = await fetch('/api/printful/v2/utils/design-friendly-tshirts');
         console.log('Response received:', response.status);
         
-        const data = await response.json();
-        console.log('Data parsed:', data);
+        // The API now returns an array directly
+        const tshirts = await response.json();
+        console.log('Data parsed:', tshirts);
         
-        displayResponse(data);
+        displayResponse(tshirts);
         
-        if (data.tshirts && data.tshirts.length > 0) {
-          console.log(`Found ${data.tshirts.length} t-shirts`);
-          state.products = data.tshirts;
-          displayProducts(data.tshirts);
+        if (Array.isArray(tshirts) && tshirts.length > 0) {
+          console.log(`Found ${tshirts.length} t-shirts`);
+          state.products = tshirts;
+          displayProducts(tshirts);
         } else {
-          console.log('No t-shirts found in response:', data);
+          console.log('No t-shirts found in response:', tshirts);
           tshirtsResult.innerHTML = '<p>No t-shirts found. Check console for details.</p>';
         }
       } catch (error) {
@@ -207,6 +208,59 @@
         displayResponse({ error: 'Failed to fetch t-shirts', details: error.toString() });
         tshirtsResult.innerHTML = '<p>Error fetching t-shirts. Check console for details.</p>';
       }
+    }
+    
+    // Helper function to find products in various response formats
+    function findProductsInResponse(data) {
+      // Check common response formats
+      if (data.tshirts && Array.isArray(data.tshirts) && data.tshirts.length > 0) {
+        return data.tshirts;
+      }
+      
+      if (data.products && Array.isArray(data.products) && data.products.length > 0) {
+        return data.products;
+      }
+      
+      if (data.result && Array.isArray(data.result) && data.result.length > 0) {
+        return data.result;
+      }
+      
+      if (data.result && data.result.tshirts && Array.isArray(data.result.tshirts) && data.result.tshirts.length > 0) {
+        return data.result.tshirts;
+      }
+      
+      if (data.result && data.result.products && Array.isArray(data.result.products) && data.result.products.length > 0) {
+        return data.result.products;
+      }
+      
+      // Look for any array in the response that might contain products
+      const possibleArrays = findArraysInObject(data);
+      for (const arr of possibleArrays) {
+        if (arr.length > 0 && typeof arr[0] === 'object' && (arr[0].id || arr[0].name)) {
+          console.log('Found possible product array:', arr);
+          return arr;
+        }
+      }
+      
+      return [];
+    }
+    
+    // Helper function to find arrays in a nested object
+    function findArraysInObject(obj, maxDepth = 3, currentDepth = 0) {
+      if (currentDepth >= maxDepth) return [];
+      
+      let arrays = [];
+      
+      if (Array.isArray(obj)) {
+        arrays.push(obj);
+      } else if (typeof obj === 'object' && obj !== null) {
+        for (const key in obj) {
+          const result = findArraysInObject(obj[key], maxDepth, currentDepth + 1);
+          arrays = arrays.concat(result);
+        }
+      }
+      
+      return arrays;
     }
 
     async function getProductDetails(productId) {
@@ -353,10 +407,20 @@
       let html = '<div class="product-grid">';
       
       products.forEach(product => {
+        // Handle different property names for image URLs
+        const imageUrl = product.product_image_url || 
+                         product.thumbnail_url || 
+                         product.image_url || 
+                         product.image || 
+                         'https://placehold.co/400x400/png?text=No+Image';
+        
         html += `
           <div class="product-card" onclick="getProductDetails(${product.id})">
-            <img src="${product.product_image_url}" alt="${product.name}">
-            <h3>${product.name}</h3>
+            <img src="${imageUrl}" alt="${product.name || 'Product'}">
+            <h3>${product.name || 'Product'}</h3>
+            <p class="product-details">
+              ${product.description ? product.description.substring(0, 50) + '...' : ''}
+            </p>
           </div>
         `;
       });

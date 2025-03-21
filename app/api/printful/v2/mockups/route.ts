@@ -1,42 +1,85 @@
 import { NextResponse } from "next/server";
 import { generateMockup, checkMockupStatus } from "@/lib/printful-api-v2";
+import { NextRequest } from "next/server";
 
-export async function POST(request: Request) {
+/**
+ * API route to generate mockups
+ * This is specifically for compatibility with the demo page
+ */
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { productId, variantId, imageUrl, placement, mockupStyleId } = body;
-
+    const { productId, variantId, imageUrl, placement = 'front', mockupStyleId } = body;
+    
     if (!productId || !variantId || !imageUrl) {
       return NextResponse.json(
-        { error: "Missing required parameters" },
+        { error: "Product ID, variant ID, and image URL are required" },
         { status: 400 }
       );
     }
-
-    // Generate mockup
+    
+    console.log(`Generating mockup for product ${productId}, variant ${variantId}, placement ${placement}`);
+    
+    // Generate the mockup
     const mockupResult = await generateMockup(
-      productId,
-      variantId,
+      parseInt(productId),
+      parseInt(variantId),
       imageUrl,
-      placement || "front",
-      mockupStyleId
+      placement,
+      mockupStyleId ? parseInt(mockupStyleId) : undefined
     );
-
-    // If the mockup generation is still in progress, poll for the result
-    if (mockupResult.status === "pending") {
-      // Wait for a short time to allow the mockup to be generated
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Check the status of the mockup generation
-      const finalResult = await checkMockupStatus(mockupResult.task_id);
-      return NextResponse.json({ mockups: finalResult.mockups });
+    
+    // If the mockup is not ready yet, check its status
+    if (mockupResult.status === 'pending') {
+      let finalResult = mockupResult;
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      // Poll for the mockup status
+      while (finalResult.status === 'pending' && attempts < maxAttempts) {
+        console.log(`Mockup generation in progress, checking status (attempt ${attempts + 1}/${maxAttempts})...`);
+        
+        // Wait a bit before checking again
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Check the status
+        finalResult = await checkMockupStatus(mockupResult.task_id);
+        attempts++;
+      }
+      
+      if (finalResult.status === 'pending') {
+        console.log('Mockup generation timed out');
+        return NextResponse.json(
+          { 
+            error: "Mockup generation timed out",
+            task_id: mockupResult.task_id,
+            timestamp: new Date().toISOString()
+          },
+          { status: 408 }
+        );
+      }
+      
+      console.log('Mockup generation completed');
+      return NextResponse.json({ 
+        mockups: finalResult.mockups,
+        timestamp: new Date().toISOString()
+      });
     }
-
-    return NextResponse.json({ mockups: mockupResult.mockups });
+    
+    // If the mockup is already ready, return it
+    console.log('Mockup generation completed immediately');
+    return NextResponse.json({ 
+      mockups: mockupResult.mockups,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
     console.error("Error generating mockup:", error);
     return NextResponse.json(
-      { error: "Failed to generate mockup" },
+      { 
+        error: "Failed to generate mockup",
+        details: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }

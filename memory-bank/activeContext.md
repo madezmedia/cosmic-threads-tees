@@ -47,16 +47,39 @@ Implementing the redesigned UI with a retro-futuristic aesthetic and improved us
 - `@/lib/wall-art-service.ts`: Integrated with the new UI for wall art generation
 - `@/lib/fal-ai-service.ts`: Powers the AI image generation
 - `@/lib/prompt-service.ts`: Enhances user prompts for better results
+- `@/lib/printful-api-v2.ts`: Provides access to Printful API v2 for product data
+
+## Printful API Integration (March 20, 2025)
+Implemented a comprehensive Printful API v2 integration for product data:
+
+1. **API Routes**:
+   - `/api/printful/catalog`: Fetches and filters catalog products by category
+   - `/api/printful/variants`: Gets product variants with colors and sizes
+   - `/api/printful/v2/utils/design-friendly-tshirts`: Fetches t-shirts suitable for designs
+   - `/api/printful/v2/utils/product-colors`: Gets available colors for a product
+   - `/api/printful/v2/utils/product-sizes`: Gets available sizes for a product
+   - `/api/printful/v2/utils/find-variant`: Finds a specific variant by product ID, color, and size
+   - `/api/printful/v2/catalog-products/[id]`: Gets details for a specific product
+   - `/api/printful/v2/catalog-products/[id]/variants`: Gets variants for a specific product
+   - `/api/printful/v2/catalog-products/[id]/mockup-styles`: Gets mockup styles for a product
+   - `/api/printful/v2/mockups`: Generates mockups for a product with a design
+
+2. **Demo Page**:
+   - Created a demo page at `/printful-v2-demo.html` to test the API integration
+   - Implemented product browsing, variant selection, and mockup generation
+
+3. **Service Layer**:
+   - Enhanced `lib/printful-api-v2.ts` with caching and error handling
+   - Added type definitions for Printful API responses
+   - Implemented utility functions for finding products and variants
 
 ## Next Steps
 - Fix font loading issues (retrofuture.woff2)
-- Implement real API integration for product generation
+- ✅ Implement real API integration for product generation
 - Add animation effects for transitions between steps
-- Create comprehensive error handling for API failures
 - Implement responsive design improvements for mobile
-   - Batch processing with error handling and reporting
-   - Filtering and organization by style and medium
-   - Responsive gallery interface with lazy loading
+- Connect the product selection UI with the Printful API integration
+- Implement mockup generation with user designs
 
 7. **Benefits**:
    - Initial content generation for the website
