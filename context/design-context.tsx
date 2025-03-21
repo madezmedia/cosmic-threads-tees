@@ -4,9 +4,20 @@ import { createContext, useContext, useReducer, ReactNode } from "react"
 import { type Medium } from "@/components/medium-selector"
 import { type Style } from "@/components/style-guide-selector"
 
+// Define variant interface
+export interface Variant {
+  id: number
+  name: string
+  size: string
+  color: string
+  colorCode: string
+  image: string
+}
+
 // Define the state interface
 export interface DesignState {
   medium: Medium | null
+  variant: Variant | null
   styles: string[]
   complexity: number
   prompt: string
@@ -18,11 +29,13 @@ export interface DesignState {
   generationProgress: number
   colorScheme: string
   size: number
+  currentStep: 'medium' | 'style' | 'prompt' | 'customize' | 'checkout'
 }
 
 // Define the initial state
 const initialState: DesignState = {
   medium: null,
+  variant: null,
   styles: [],
   complexity: 70,
   prompt: "",
@@ -33,12 +46,14 @@ const initialState: DesignState = {
   placementOption: "center",
   generationProgress: 0,
   colorScheme: "original",
-  size: 80
+  size: 80,
+  currentStep: "medium"
 }
 
 // Define action types
 type DesignAction =
   | { type: "SET_MEDIUM"; payload: Medium | null }
+  | { type: "SET_VARIANT"; payload: Variant | null }
   | { type: "TOGGLE_STYLE"; payload: string }
   | { type: "SET_COMPLEXITY"; payload: number }
   | { type: "SET_PROMPT"; payload: string }
@@ -50,6 +65,7 @@ type DesignAction =
   | { type: "SET_GENERATION_PROGRESS"; payload: number }
   | { type: "SET_COLOR_SCHEME"; payload: string }
   | { type: "SET_SIZE"; payload: number }
+  | { type: "SET_STEP"; payload: 'medium' | 'style' | 'prompt' | 'customize' | 'checkout' }
   | { type: "RESET_DESIGN" }
 
 // Create the reducer function
@@ -57,6 +73,8 @@ function designReducer(state: DesignState, action: DesignAction): DesignState {
   switch (action.type) {
     case "SET_MEDIUM":
       return { ...state, medium: action.payload }
+    case "SET_VARIANT":
+      return { ...state, variant: action.payload }
     case "TOGGLE_STYLE":
       return {
         ...state,
@@ -84,10 +102,13 @@ function designReducer(state: DesignState, action: DesignAction): DesignState {
       return { ...state, colorScheme: action.payload }
     case "SET_SIZE":
       return { ...state, size: action.payload }
+    case "SET_STEP":
+      return { ...state, currentStep: action.payload }
     case "RESET_DESIGN":
       return {
         ...initialState,
         medium: state.medium, // Preserve the selected medium
+        variant: state.variant, // Preserve the selected variant
       }
     default:
       return state

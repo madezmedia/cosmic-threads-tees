@@ -125,6 +125,10 @@ This file captures important patterns, preferences, and project intelligence for
 - Use style-specific terminology in prompts
 - Include medium-specific requirements (e.g., "suitable for screen printing")
 - Balance creativity and specificity in prompts
+- Use keyword dictionaries for style and product-specific enhancements
+- Implement randomized keyword selection to avoid repetitive results
+- Add quality boosters to all prompts (high quality, detailed, professional)
+- Analyze prompts for vague terms and suggest improvements
 
 ### Image Generation
 
@@ -256,6 +260,9 @@ This file captures important patterns, preferences, and project intelligence for
 - Include comprehensive metadata with generated images
 - Implement batch processing for efficient generation
 - Add proper error handling and fallbacks
+- Use retry mechanisms with exponential backoff for transient errors
+- Implement timeout handling to prevent hanging requests
+- Provide detailed progress indicators during generation
 
 ### Batch Processing
 

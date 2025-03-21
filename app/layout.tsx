@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import CookieConsent from "@/components/cookie-consent"
 import { AppProvider } from "@/context/app-context"
 import { Toaster } from "@/components/ui/toaster"
+import { TanStackProvider } from "@/lib/query-client"
 
 // Font configuration for our three-tier typography system
 const inter = Inter({ 
@@ -46,11 +47,13 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-deepSpace text-foreground">
         <AppProvider>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            {children}
-            <CookieConsent />
-            <Toaster />
-          </ThemeProvider>
+          <TanStackProvider>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+              {children}
+              <CookieConsent />
+              <Toaster />
+            </ThemeProvider>
+          </TanStackProvider>
         </AppProvider>
       </body>
     </html>
