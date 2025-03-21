@@ -100,11 +100,19 @@
   <p>This demo showcases the integration with Printful API v2 beta for the Cosmic Threads T-shirt design platform.</p>
 
   <div class="container">
-    <div class="panel">
-      <h2>1. Find Design-Friendly T-shirts</h2>
-      <button id="findTshirtsBtn">Find T-shirts</button>
-      <div id="tshirtsResult"></div>
+  <div class="panel">
+    <h2>1. Find Design-Friendly T-shirts</h2>
+    <div class="filter-options" style="margin-bottom: 15px;">
+      <label style="display: block; margin-bottom: 5px;">Filter by Print Type:</label>
+      <select id="printTypeFilter" style="margin-bottom: 10px;">
+        <option value="">All Print Types</option>
+        <option value="front">Front Image Print</option>
+        <option value="all-over">All-Over Print</option>
+      </select>
     </div>
+    <button id="findTshirtsBtn">Find T-shirts</button>
+    <div id="tshirtsResult"></div>
+  </div>
 
     <div class="panel">
       <h2>2. Product Details</h2>
@@ -162,7 +170,22 @@
       mockupStyles: []
     };
 
+    // Helper function to proxy Printful CDN image URLs
+    function getProxiedImageUrl(url) {
+      // If the URL is not from Printful's CDN, return it as is
+      if (!url || !url.startsWith("https://files.cdn.printful.com/")) {
+        return url;
+      }
+      
+      // Encode the URL to ensure it's properly passed as a query parameter
+      const encodedUrl = encodeURIComponent(url);
+      
+      // Return the proxied URL
+      return `/api/printful/proxy/image?url=${encodedUrl}`;
+    }
+    
     // DOM Elements
+    const printTypeFilter = document.getElementById('printTypeFilter');
     const findTshirtsBtn = document.getElementById('findTshirtsBtn');
     const tshirtsResult = document.getElementById('tshirtsResult');
     const productDetails = document.getElementById('productDetails');
@@ -178,29 +201,41 @@
     // Event Listeners
     findTshirtsBtn.addEventListener('click', findDesignFriendlyTshirts);
     generateMockupBtn.addEventListener('click', generateMockup);
-
+    
     // API Functions
     async function findDesignFriendlyTshirts() {
       try {
         // Show loading state
         displayResponse({ status: "loading", message: "Fetching t-shirts..." });
         
-        console.log('Fetching t-shirts...');
-        const response = await fetch('/api/printful/v2/utils/design-friendly-tshirts');
+        // Get the selected print type filter
+        const printType = printTypeFilter.value;
+        
+        // Build the URL with the filter parameter if selected
+        let url = '/api/printful/v2/utils/design-friendly-tshirts';
+        if (printType) {
+          url += `?printType=${printType}`;
+        }
+        
+        console.log(`Fetching t-shirts with filter: ${printType || 'none'}...`);
+        const response = await fetch(url);
         console.log('Response received:', response.status);
         
-        // The API now returns an array directly
-        const tshirts = await response.json();
-        console.log('Data parsed:', tshirts);
+        // Parse the response data
+        const data = await response.json();
+        console.log('Data parsed:', data);
         
-        displayResponse(tshirts);
+        displayResponse(data);
         
-        if (Array.isArray(tshirts) && tshirts.length > 0) {
-          console.log(`Found ${tshirts.length} t-shirts`);
-          state.products = tshirts;
-          displayProducts(tshirts);
+        // Use the helper function to find products in the response, regardless of format
+        const products = findProductsInResponse(data);
+        
+        if (products.length > 0) {
+          console.log(`Found ${products.length} t-shirts`);
+          state.products = products;
+          displayProducts(products);
         } else {
-          console.log('No t-shirts found in response:', tshirts);
+          console.log('No t-shirts found in response:', data);
           tshirtsResult.innerHTML = '<p>No t-shirts found. Check console for details.</p>';
         }
       } catch (error) {
@@ -270,18 +305,53 @@
         
         displayResponse(data);
         
-        if (data.product) {
-          state.selectedProduct = data.product;
-          displayProductDetails(data.product);
+        // Log the response for debugging
+        console.log('Product details response:', data);
+        
+        // Check for the nested product data structure
+        if (data.product && data.product.data) {
+          // Store the actual product data
+          state.selectedProduct = data.product.data;
+          
+          // Display product details
+          displayProductDetails(state.selectedProduct);
+          
+          // Get variants
           await getProductVariants(productId);
-          await getProductColors(productId);
-          await getProductSizes(productId);
+          
+          // Use product's existing colors data instead of API call
+          if (state.selectedProduct.colors && Array.isArray(state.selectedProduct.colors)) {
+            console.log('Using colors from product data:', state.selectedProduct.colors);
+            state.colors = state.selectedProduct.colors;
+            displayColorOptions(state.selectedProduct.colors);
+          } else {
+            // Fallback to API call if colors not in product data
+            await getProductColors(productId);
+          }
+          
+          // Use product's existing sizes data instead of API call
+          if (state.selectedProduct.sizes && Array.isArray(state.selectedProduct.sizes)) {
+            console.log('Using sizes from product data:', state.selectedProduct.sizes);
+            state.sizes = state.selectedProduct.sizes;
+            displaySizeOptions(state.selectedProduct.sizes);
+          } else {
+            // Fallback to API call if sizes not in product data
+            await getProductSizes(productId);
+          }
+          
+          // Try to get mockup styles
           await getMockupStyles(productId);
+          
           customizationPanel.style.display = 'block';
+        } else {
+          // Handle case where product data is not in expected format
+          console.error('Product data not found in expected format:', data);
+          productDetails.innerHTML = '<p>Error: Could not load product details. See console for more information.</p>';
         }
       } catch (error) {
         console.error('Error:', error);
         displayResponse({ error: 'Failed to fetch product details' });
+        productDetails.innerHTML = '<p>Error fetching product details. Please try again.</p>';
       }
     }
 
@@ -408,11 +478,14 @@
       
       products.forEach(product => {
         // Handle different property names for image URLs
-        const imageUrl = product.product_image_url || 
-                         product.thumbnail_url || 
-                         product.image_url || 
-                         product.image || 
-                         'https://placehold.co/400x400/png?text=No+Image';
+        let imageUrl = product.product_image_url || 
+                       product.thumbnail_url || 
+                       product.image_url || 
+                       product.image || 
+                       'https://placehold.co/400x400/png?text=No+Image';
+        
+        // Use the proxy for Printful CDN images
+        imageUrl = getProxiedImageUrl(imageUrl);
         
         html += `
           <div class="product-card" onclick="getProductDetails(${product.id})">
@@ -420,6 +493,9 @@
             <h3>${product.name || 'Product'}</h3>
             <p class="product-details">
               ${product.description ? product.description.substring(0, 50) + '...' : ''}
+            </p>
+            <p class="print-type">
+              <small>Print Type: ${product.techniques?.includes('dtf') ? 'All-Over Print' : 'Front Image Print'}</small>
             </p>
           </div>
         `;
@@ -433,18 +509,41 @@
     }
 
     function displayProductDetails(product) {
+      // Make sure we have a valid product
+      if (!product) {
+        productDetails.innerHTML = '<p>No product details available</p>';
+        return;
+      }
+      
+      // Log the product for debugging
+      console.log('Displaying product details:', product);
+      
+      // Build HTML with name and description
       let html = `
-        <h3>${product.name}</h3>
-        <p>${product.description}</p>
-        <div>
-          <strong>Available Placements:</strong>
-          <ul>
-            ${Object.keys(product.available_placements).map(placement => 
-              `<li>${placement} (${product.available_placements[placement].technique})</li>`
-            ).join('')}
-          </ul>
-        </div>
+        <h3>${product.name || 'Unknown Product'}</h3>
+        <p>${product.description || 'No description available'}</p>
       `;
+      
+      // Only add placements section if available_placements exists and has keys
+      if (product.available_placements && Object.keys(product.available_placements).length > 0) {
+        html += `
+          <div>
+            <strong>Available Placements:</strong>
+            <ul>
+              ${Object.keys(product.available_placements).map(placement => 
+                `<li>${placement} (${product.available_placements[placement].technique})</li>`
+              ).join('')}
+            </ul>
+          </div>
+        `;
+      } else {
+        html += `
+          <div>
+            <strong>Available Placements:</strong>
+            <p>No placement information available</p>
+          </div>
+        `;
+      }
       
       productDetails.innerHTML = html;
     }
@@ -487,6 +586,13 @@
     }
 
     function displayMockupStyles(styles) {
+      // Make sure styles is an array
+      if (!Array.isArray(styles) || styles.length === 0) {
+        console.log('No mockup styles available or invalid format:', styles);
+        mockupStyleSelect.innerHTML = '<option value="">Default style (no other styles available)</option>';
+        return;
+      }
+      
       let html = '<option value="">Default style</option>';
       
       styles.forEach(style => {
@@ -502,10 +608,57 @@
     }
 
     function displayMockup(mockup) {
+      // Process the entire mockup object to proxy all image URLs
+      const processedMockup = proxyPrintfulImages(mockup);
+      
+      // Make sure we have a valid mockup URL
+      const mockupUrl = processedMockup.mockup_url || mockup.mockup_url;
+      
+      // Apply the proxy directly to ensure we have a valid URL
+      const proxiedUrl = getProxiedImageUrl(mockupUrl);
+      
       mockupResult.innerHTML = `
         <h3>Generated Mockup</h3>
-        <img src="${mockup.mockup_url}" alt="Generated Mockup">
+        <img src="${proxiedUrl}" alt="Generated Mockup">
       `;
+      
+      // Log for debugging
+      console.log('Original mockup URL:', mockup.mockup_url);
+      console.log('Processed mockup URL:', mockupUrl);
+      console.log('Proxied URL:', proxiedUrl);
+    }
+
+    // Enhanced version of proxyPrintfulImages from lib/image-proxy.ts
+    function proxyPrintfulImages(obj) {
+      if (!obj) {
+        return obj;
+      }
+      
+      // If it's a string, check if it's a Printful CDN URL
+      if (typeof obj === 'string') {
+        return getProxiedImageUrl(obj);
+      }
+      
+      // If it's an array, process each item
+      if (Array.isArray(obj)) {
+        return obj.map(item => proxyPrintfulImages(item));
+      }
+      
+      // If it's an object, process each property
+      if (typeof obj === 'object') {
+        const result = {};
+        
+        for (const key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            result[key] = proxyPrintfulImages(obj[key]);
+          }
+        }
+        
+        return result;
+      }
+      
+      // For other types, return as is
+      return obj;
     }
 
     function displayResponse(data) {
